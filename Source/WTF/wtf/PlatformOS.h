@@ -131,6 +131,7 @@
     || OS(LINUX)            \
     || OS(NETBSD)           \
     || OS(OPENBSD)          \
+    || OS(QNX)              \
     || defined(unix)        \
     || defined(__unix)      \
     || defined(__unix__)
