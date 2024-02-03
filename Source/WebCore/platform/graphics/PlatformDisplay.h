@@ -95,6 +95,9 @@ public:
         GBM,
 #endif
 #endif
+#if PLATFORM(QNXSCREEN)
+        QnxScreen,
+#endif
     };
 
     virtual Type type() const = 0;

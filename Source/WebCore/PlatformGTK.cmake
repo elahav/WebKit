@@ -30,6 +30,7 @@ list(APPEND WebCore_PRIVATE_INCLUDE_DIRECTORIES
     "${WEBCORE_DIR}/platform/graphics/opentype"
     "${WEBCORE_DIR}/platform/graphics/wayland"
     "${WEBCORE_DIR}/platform/graphics/x11"
+    "${WEBCORE_DIR}/platform/graphics/qnxscreen"
     "${WEBCORE_DIR}/platform/mediacapabilities"
     "${WEBCORE_DIR}/platform/mediastream/gtk"
     "${WEBCORE_DIR}/platform/mediastream/gstreamer"
@@ -97,6 +98,12 @@ if (ENABLE_WAYLAND_TARGET)
     )
     list(APPEND WebCore_LIBRARIES
         ${WAYLAND_LIBRARIES}
+    )
+endif ()
+
+if (ENABLE_QNXSCREEN_TARGET)
+    list(APPEND WebCore_SYSTEM_INCLUDE_DIRECTORIES
+        ${LIBDRM_INCLUDE_DIR}
     )
 endif ()
 

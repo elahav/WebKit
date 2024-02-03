@@ -86,6 +86,7 @@ platform/graphics/gtk/SystemFontDatabaseGTK.cpp
 platform/graphics/opentype/OpenTypeVerticalData.cpp
 
 platform/graphics/wayland/PlatformDisplayWayland.cpp
+platform/graphics/qnxscreen/PlatformDisplayQnxScreen.cpp
 
 platform/graphics/x11/PlatformDisplayX11.cpp @no-unify
 platform/graphics/x11/XErrorTrapper.cpp @no-unify

@@ -42,6 +42,10 @@
 #include "PlatformDisplayWin.h"
 #endif
 
+#if PLATFORM(QNXSCREEN)
+#include "PlatformDisplayQnxScreen.h"
+#endif
+
 #if USE(WPE_RENDERER)
 #include "PlatformDisplayLibWPE.h"
 #endif
@@ -159,6 +163,8 @@ std::unique_ptr<PlatformDisplay> PlatformDisplay::createPlatformDisplay()
     return PlatformDisplayWayland::create(nullptr);
 #elif PLATFORM(X11)
     return PlatformDisplayX11::create(nullptr);
+#elif PLATFORM(QNXSCREEN)
+    return PlatformDisplayQnxScreen::create(nullptr);
 #endif
 
 #if PLATFORM(WPE)
