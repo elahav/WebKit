@@ -514,7 +514,7 @@ void ScriptController::collectIsolatedContexts(Vector<std::pair<JSC::JSGlobalObj
     }
 }
 
-#if !PLATFORM(COCOA)
+#if !PLATFORM(COCOA) && !PLATFORM(QT)
 RefPtr<JSC::Bindings::Instance> ScriptController::createScriptInstanceForWidget(Widget*)
 {
     return nullptr;

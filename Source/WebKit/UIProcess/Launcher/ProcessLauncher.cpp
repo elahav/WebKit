@@ -67,9 +67,8 @@ void ProcessLauncher::didFinishLaunchingProcess(ProcessID processIdentifier, IPC
     tracePoint(ProcessLaunchEnd, m_launchOptions.processIdentifier.toUInt64(), static_cast<uint64_t>(m_launchOptions.processType), static_cast<uint64_t>(m_processID));
 
     if (!m_client) {
-        // FIXME: Make Identifier a move-only object and release port rights/connections in the destructor.
-#if OS(DARWIN) && !PLATFORM(GTK)
-        // FIXME: Should really be something like USE(MACH)
+        // FIXME: Make Identifier a move-only objec t and release port rights/connections in the destructor.
+#if USE(MACH_PORTS)
         if (identifier.port)
             mach_port_mod_refs(mach_task_self(), identifier.port, MACH_PORT_RIGHT_RECEIVE, -1);
 #endif

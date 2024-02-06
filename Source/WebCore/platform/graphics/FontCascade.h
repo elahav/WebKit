@@ -38,6 +38,13 @@
 #include <wtf/WeakPtr.h>
 #include <wtf/unicode/CharacterNames.h>
 
+#if PLATFORM(QT)
+#include <QRawFont>
+QT_BEGIN_NAMESPACE
+class QTextLayout;
+QT_END_NAMESPACE
+#endif
+
 // "X11/X.h" defines Complex to 0 and conflicts
 // with Complex value in CodePath enum.
 #ifdef Complex
@@ -55,7 +62,7 @@ class TextRun;
 namespace DisplayList {
 class DisplayList;
 }
-    
+
 struct GlyphData;
 
 struct GlyphOverflow {
@@ -222,6 +229,11 @@ public:
 
     std::unique_ptr<DisplayList::DisplayList> displayListForTextRun(GraphicsContext&, const TextRun&, unsigned from = 0, std::optional<unsigned> to = { }, CustomFontNotReadyAction = CustomFontNotReadyAction::DoNotPaintIfFontNotReady) const;
 
+#if PLATFORM(QT)
+    QRawFont rawFont() const;
+    QFont syntheticFont() const;
+#endif
+
     unsigned generation() const { return m_generation; }
 
 private:
@@ -240,6 +252,10 @@ private:
 
     static bool canReturnFallbackFontsForComplexText();
     static bool canExpandAroundIdeographsInComplexText();
+
+#if PLATFORM(QT)
+    void drawComplexText(GraphicsContext&, const TextRun&, const FloatPoint&, int from, int to) const;
+#endif
 
     GlyphBuffer layoutComplexText(const TextRun&, unsigned from, unsigned to, ForTextEmphasisOrNot = NotForTextEmphasis) const;
     float floatWidthForComplexText(const TextRun&, SingleThreadWeakHashSet<const Font>* fallbackFonts = nullptr, GlyphOverflow* = nullptr) const;
@@ -337,6 +353,10 @@ private:
             return true;
         return advancedTextRenderingMode();
     }
+    
+#if PLATFORM(QT)
+    void initFormatForTextLayout(QTextLayout*, const TextRun&) const;
+#endif
 
     struct Spacing {
         Length letter;

@@ -32,11 +32,19 @@
 #include <wtf/Seconds.h>
 #include <wtf/Threading.h>
 
-#if USE(COCOA_EVENT_LOOP)
+#if USE(COCOA_EVENT_LOOP) || (PLATFORM(QT) && USE(MACH_PORTS))
 #include <dispatch/dispatch.h>
 #include <wtf/OSObjectPtr.h>
+#elif PLATFORM(QT) && USE(UNIX_DOMAIN_SOCKETS)
+#include <QSocketNotifier>
 #else
 #include <wtf/RunLoop.h>
+#endif
+
+#if PLATFORM(QT) && USE(UNIX_DOMAIN_SOCKETS)
+QT_BEGIN_NAMESPACE
+class QProcess;
+QT_END_NAMESPACE
 #endif
 
 namespace WTF {
@@ -54,6 +62,9 @@ public:
 
 #if USE(COCOA_EVENT_LOOP)
     dispatch_queue_t dispatchQueue() const { return m_dispatchQueue.get(); }
+#elif PLATFORM(QT) && USE(UNIX_DOMAIN_SOCKETS)
+    QSocketNotifier* registerSocketEventHandler(int, QSocketNotifier::Type, WTF::Function<void()>&&);
+    void dispatchOnTermination(QProcess*, WTF::Function<void()>&&);
 #endif
 
 protected:
@@ -62,14 +73,18 @@ protected:
         Concurrent
     };
     WorkQueueBase(const char* name, Type, QOS);
-#if USE(COCOA_EVENT_LOOP)
+#if USE(COCOA_EVENT_LOOP) || (PLATFORM(QT) && USE(MACH_PORTS))
     explicit WorkQueueBase(OSObjectPtr<dispatch_queue_t>&&);
-#else
+#elif !PLATFORM(QT)
     explicit WorkQueueBase(RunLoop&);
 #endif
 
-#if USE(COCOA_EVENT_LOOP)
+#if USE(COCOA_EVENT_LOOP) || (PLATFORM(QT) && USE(MACH_PORTS))
     OSObjectPtr<dispatch_queue_t> m_dispatchQueue;
+#elif PLATFORM(QT) && USE(UNIX_DOMAIN_SOCKETS)
+    class WorkItemQt;
+    QThread* m_workThread;
+    friend class WorkItemQt;
 #else
     RunLoop* m_runLoop;
 #endif
@@ -95,7 +110,11 @@ public:
     void ref() const override;
     void deref() const override;
 
-#if !USE(COCOA_EVENT_LOOP)
+#if PLATFORM(QT) && USE(UNIX_DOMAIN_SOCKETS)
+    class WorkItemQt;
+    QThread* m_workThread;
+    friend class WorkItemQt;
+#elif !USE(COCOA_EVENT_LOOP) && !(PLATFORM(QT) && USE(MACH_PORTS))
     RunLoop& runLoop() const { return *m_runLoop; }
 #endif
 

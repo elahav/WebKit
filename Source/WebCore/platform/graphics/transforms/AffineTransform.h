@@ -38,6 +38,8 @@
 
 #if USE(CG)
 typedef struct CGAffineTransform CGAffineTransform;
+#elif PLATFORM(QT)
+#include <QTransform>
 #endif
 
 namespace WTF {
@@ -183,6 +185,8 @@ public:
 
 #if USE(CG)
     WEBCORE_EXPORT operator CGAffineTransform() const;
+#elif PLATFORM(QT)
+    operator QTransform() const;
 #endif
 
     static AffineTransform makeTranslation(FloatSize delta)

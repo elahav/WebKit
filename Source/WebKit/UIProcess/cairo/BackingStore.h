@@ -32,6 +32,11 @@
 #include <pal/HysteresisActivity.h>
 #include <wtf/Noncopyable.h>
 
+#if PLATFORM(QT)
+#include <QtGui/QPainter>
+#include <QtGui/QPixmap>
+#endif
+
 namespace WebCore {
 class IntRect;
 }

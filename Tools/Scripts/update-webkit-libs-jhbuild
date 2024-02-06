@@ -31,6 +31,7 @@ use XML::LibXML;
 
 my $platform = "";
 $platform = "gtk" if isGtk();
+$platform = "qt" if isQt();
 $platform = "wpe" if isWPE();
 
 if (!$platform) {
@@ -223,7 +224,7 @@ delete $ENV{AR_FLAGS} if exists $ENV{AR_FLAGS};
 
 chdir(relativeScriptsDir() . "/../jhbuild") or die $!;
 
-my %prettyPlatform = ( "gtk" => "GTK+", "wpe" => "WPE" );
+my %prettyPlatform = ( "gtk" => "GTK+", "qt" => "Qt", "wpe" => "WPE" );
 
 if (!$force && !jhbuildConfigurationChanged()) {
     print $prettyPlatform{$platform} . " port dependencies are already up to date\n";

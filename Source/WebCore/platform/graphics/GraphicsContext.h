@@ -314,6 +314,10 @@ public:
     virtual void drawLinesForText(const FloatPoint&, float thickness, const DashArray& widths, bool printing, bool doubleLines = false, StrokeStyle = StrokeStyle::SolidStroke) = 0;
     virtual void drawDotsForDocumentMarker(const FloatRect&, DocumentMarkerLineStyle) = 0;
 
+#if PLATFORM(QT)
+    bool mustUseShadowBlur() const;
+#endif
+    
     // DisplayList
     WEBCORE_EXPORT virtual void drawDisplayListItems(const Vector<DisplayList::Item>&, const DisplayList::ResourceHeap&, const FloatPoint& destination);
 

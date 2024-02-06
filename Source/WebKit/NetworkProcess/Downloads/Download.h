@@ -61,6 +61,10 @@ class NetworkDataTask;
 class NetworkSession;
 class WebPage;
 
+#if PLATFORM(QT)
+class QtFileDownloader;
+#endif
+
 class Download : public IPC::MessageSender, public CanMakeWeakPtr<Download> {
     WTF_MAKE_NONCOPYABLE(Download); WTF_MAKE_FAST_ALLOCATED;
 public:
@@ -87,6 +91,10 @@ public:
     void didReceiveData(uint64_t bytesWritten, uint64_t totalBytesWritten, uint64_t totalBytesExpectedToWrite);
     void didFinish();
     void didFail(const WebCore::ResourceError&, const IPC::DataReference& resumeData);
+    
+#if PLATFORM(QT)
+    void startTransfer(const String& destination);
+#endif
 
     void applicationDidEnterBackground() { m_monitor.applicationDidEnterBackground(); }
     void applicationWillEnterForeground() { m_monitor.applicationWillEnterForeground(); }
@@ -117,6 +125,9 @@ private:
     PAL::SessionID m_sessionID;
     bool m_hasReceivedData { false };
     IgnoreDidFailCallback m_ignoreDidFailCallback { IgnoreDidFailCallback::No };
+#if PLATFORM(QT)
+    QtFileDownloader* m_qtDownloader { nullptr };
+#endif
     DownloadMonitor m_monitor { *this };
     unsigned m_testSpeedMultiplier { 1 };
     CompletionHandler<void(const IPC::DataReference&)> m_cancelCompletionHandler;

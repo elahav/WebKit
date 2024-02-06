@@ -1,0 +1,11 @@
+--- Source/WebKit/UIProcess/WebPageProxy.h
++++ Source/WebKit/UIProcess/WebPageProxy.h
+@@ -1449,7 +1478,7 @@ public:
+     void setPromisedDataForImage(const String& pasteboardName, SharedMemoryHandle&& imageHandle, const String& filename, const String& extension,
+         const String& title, const String& url, const String& visibleURL, SharedMemoryHandle&& archiveHandle, const String& originIdentifier);
+ #endif
+-#if PLATFORM(GTK)
++#if PLATFORM(GTK) || PLATFORM(QT)
+     void startDrag(WebCore::SelectionData&&, OptionSet<WebCore::DragOperation>, std::optional<ShareableBitmapHandle>&& dragImage, WebCore::IntPoint&& dragImageHotspot);
+ #endif
+ #endif

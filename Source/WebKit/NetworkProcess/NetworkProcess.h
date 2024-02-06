@@ -84,6 +84,10 @@ namespace PAL {
 class SessionID;
 }
 
+#if PLATFORM(QT)
+#include "QtNetworkAccessManager.h"
+#endif
+
 namespace WebCore {
 class CertificateInfo;
 class CurlProxySettings;
@@ -203,6 +207,10 @@ public:
     HashSet<String> hostNamesWithHSTSCache(PAL::SessionID) const;
     void deleteHSTSCacheForHostNames(PAL::SessionID, const Vector<String>&);
     void clearHSTSCache(PAL::SessionID, WallTime modifiedSince);
+#endif
+
+#if PLATFORM(QT)
+    QNetworkAccessManager& networkAccessManager() { return m_networkAccessManager; }
 #endif
 
     void findPendingDownloadLocation(NetworkDataTask&, ResponseCompletionHandler&&, const WebCore::ResourceResponse&);
@@ -471,6 +479,9 @@ private:
     void downloadRequest(PAL::SessionID, DownloadID, const WebCore::ResourceRequest&, const std::optional<WebCore::SecurityOriginData>& topOrigin, std::optional<NavigatingToAppBoundDomain>, const String& suggestedFilename);
     void resumeDownload(PAL::SessionID, DownloadID, const IPC::DataReference& resumeData, const String& path, SandboxExtensionHandle&&, CallDownloadDidStart);
     void cancelDownload(DownloadID, CompletionHandler<void(const IPC::DataReference&)>&&);
+#if PLATFORM(QT)
+    void startTransfer(DownloadID, const String& destination);
+#endif
 #if PLATFORM(COCOA)
     void publishDownloadProgress(DownloadID, const URL&, SandboxExtensionHandle&&);
 #endif
@@ -559,6 +570,10 @@ private:
 
 #if ENABLE(CONTENT_EXTENSIONS)
     NetworkContentRuleListManager m_networkContentRuleListManager;
+#endif
+
+#if PLATFORM(QT)
+    QtNetworkAccessManager m_networkAccessManager;
 #endif
 
 #if USE(RUNNINGBOARD)

@@ -24,6 +24,12 @@
 #include <wtf/text/AtomStringImpl.h>
 #include <wtf/text/WTFString.h>
 
+#if PLATFORM(QT)
+QT_BEGIN_NAMESPACE
+class QString;
+QT_END_NAMESPACE
+#endif
+
 namespace WTF {
 
 class AtomString final {
@@ -118,6 +124,11 @@ public:
     operator NSString *() const { return m_string; }
 #endif
 
+#if PLATFORM(QT)
+    WTF_EXPORT_PRIVATE AtomString(const QString&);
+    WTF_EXPORT_PRIVATE AtomString(QStringView);
+#endif
+
 #if OS(WINDOWS)
     AtomString(const wchar_t* characters, unsigned length)
         : AtomString(ucharFrom(characters), length) { }
@@ -149,7 +160,7 @@ static_assert(sizeof(AtomString) == sizeof(String), "AtomString and String must 
 
 inline bool operator==(const AtomString& a, const AtomString& b) { return a.impl() == b.impl(); }
 inline bool operator==(const AtomString& a, ASCIILiteral b) { return WTF::equal(a.impl(), b); }
-inline bool operator==(const AtomString& a, const Vector<UChar>& b) { return a.impl() && equal(a.impl(), b.data(), b.size()); }    
+inline bool operator==(const AtomString& a, const Vector<UChar>& b) { return a.impl() && equal(a.impl(), b.data(), b.size()); }
 inline bool operator==(const AtomString& a, const String& b) { return equal(a.impl(), b.impl()); }
 inline bool operator==(const String& a, const AtomString& b) { return equal(a.impl(), b.impl()); }
 inline bool operator==(const Vector<UChar>& a, const AtomString& b) { return b == a; }

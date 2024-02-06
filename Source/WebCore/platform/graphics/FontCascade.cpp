@@ -262,6 +262,7 @@ float FontCascade::widthOfTextRange(const TextRun& run, unsigned from, unsigned 
 
     auto codePathToUse = codePath(run);
     if (codePathToUse == CodePath::Complex) {
+#if !PLATFORM(QT)
         ComplexTextController complexIterator(*this, run, false, fallbackFonts);
         complexIterator.advance(from, nullptr, IncludePartialGlyphs, fallbackFonts);
         offsetBeforeRange = complexIterator.runWidthSoFar();
@@ -269,6 +270,7 @@ float FontCascade::widthOfTextRange(const TextRun& run, unsigned from, unsigned 
         offsetAfterRange = complexIterator.runWidthSoFar();
         complexIterator.advance(run.length(), nullptr, IncludePartialGlyphs, fallbackFonts);
         totalWidth = complexIterator.runWidthSoFar();
+#endif
     } else {
         WidthIterator simpleIterator(*this, run, fallbackFonts);
         GlyphBuffer glyphBuffer;
@@ -1634,7 +1636,7 @@ int FontCascade::offsetForPositionForComplexText(const TextRun& run, float x, bo
     return controller.offsetForPosition(x, includePartialGlyphs);
 }
 
-#if !PLATFORM(COCOA) && !USE(HARFBUZZ)
+#if !PLATFORM(COCOA) && !USE(HARFBUZZ) && !PLATFORM(QT)
 // FIXME: Unify this with the macOS and iOS implementation.
 const Font* FontCascade::fontForCombiningCharacterSequence(StringView stringView) const
 {

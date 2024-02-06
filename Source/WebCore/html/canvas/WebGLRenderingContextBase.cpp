@@ -171,6 +171,10 @@
 #include "OffscreenCanvas.h"
 #endif
 
+#if PLATFORM(QT)
+#undef emit
+#endif
+
 #if PLATFORM(MAC)
 #include "PlatformScreen.h"
 #endif

@@ -46,6 +46,11 @@
 #include <wtf/RetainPtr.h>
 #endif
 
+#if PLATFORM(QT)
+#include <QImageReader>
+#include <QImageWriter>
+#endif
+
 #if ENABLE(WEB_ARCHIVE) || ENABLE(MHTML)
 #include "ArchiveFactory.h"
 #endif
@@ -391,6 +396,7 @@ String MIMETypeRegistry::mediaMIMETypeForExtension(StringView extension)
     return mimeTypeForExtension(extension);
 }
 
+#if !PLATFORM(QT)
 String MIMETypeRegistry::mimeTypeForPath(StringView path)
 {
     auto position = path.reverseFind('.');
@@ -401,6 +407,7 @@ String MIMETypeRegistry::mimeTypeForPath(StringView path)
     }
     return defaultMIMEType();
 }
+#endif
 
 bool MIMETypeRegistry::isSupportedImageMIMEType(const String& mimeType)
 {
@@ -473,6 +480,11 @@ std::unique_ptr<MIMETypeRegistryThreadGlobalData> MIMETypeRegistry::createMIMETy
         "image/ico"_s,
 #elif USE(CAIRO)
         "image/png"_s,
+#elif PLATFORM(QT)
+        "image/png"_s,
+        "image/jpeg"_s,
+        "image/gif"_s,
+        "image/bmp"_s,
 #endif
     };
 #endif

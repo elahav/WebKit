@@ -43,9 +43,9 @@ class WebPlatformStrategies :
 public:
     static void initialize();
     
-private:
     WebPlatformStrategies();
     
+private:
     // WebCore::PlatformStrategies
     WebCore::LoaderStrategy* createLoaderStrategy() override;
     WebCore::PasteboardStrategy* createPasteboardStrategy() override;

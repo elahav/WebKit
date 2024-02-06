@@ -39,6 +39,9 @@
 #if USE(QUICK_LOOK)
 #include "QuickLook.h"
 #endif
+#if PLATFORM(QT)
+#include <QStringList>
+#endif
 
 namespace WebCore {
 
@@ -115,6 +118,9 @@ static const URLSchemesMap& builtinLocalURLSchemes() WTF_REQUIRES_LOCK(schemeReg
         "file"_s,
 #if PLATFORM(COCOA)
         "applewebdata"_s,
+#endif
+#if PLATFORM(QT)
+        "qrc"_s,
 #endif
     };
     return schemes;
@@ -235,6 +241,19 @@ void LegacySchemeRegistry::removeURLSchemeRegisteredAsLocal(const String& scheme
 
     localURLSchemes().remove(scheme);
 }
+
+#if PLATFORM(QT)
+QStringList LegacySchemeRegistry::localSchemes()
+{
+    QStringList result;
+    Locker<Lock> locker(schemeRegistryLock);
+    for (const auto& scheme : builtinLocalURLSchemes())
+        result.append(scheme);
+    for (const auto& scheme : localURLSchemes())
+        result.append(scheme);
+    return result;
+}
+#endif
 
 static MemoryCompactRobinHoodHashSet<String>& schemesHandledBySchemeHandler() WTF_REQUIRES_LOCK(schemeRegistryLock)
 {

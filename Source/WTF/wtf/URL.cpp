@@ -44,6 +44,10 @@
 #include <wtf/text/StringToIntegerConversion.h>
 #include <wtf/text/TextStream.h>
 
+#if PLATFORM(QT)
+#include <QUrl>
+#endif
+
 namespace WTF {
 
 void URL::invalidate()
@@ -269,7 +273,7 @@ URL URL::truncatedForUseAsBase() const
     return URL(m_string.left(m_pathAfterLastSlash));
 }
 
-#if !USE(CF)
+#if !PLATFORM(QT) && !USE(CF)
 
 String URL::fileSystemPath() const
 {
@@ -284,6 +288,24 @@ String URL::fileSystemPath() const
     return result;
 }
 
+#endif
+
+#if PLATFORM(QT)
+// It's placed here because decodeEscapeSequencesFromParsedURL is static
+String URL::fileSystemPath() const
+{
+    if (!isValid())
+        return String();
+
+    if (protocolIsFile())
+        return QUrl(*this).toLocalFile();
+
+    // A valid qrc resource path begins with a colon.
+    if (protocolIs("qrc"_s))
+        return ":" + decodeEscapeSequencesFromParsedURL(StringView(path()));
+
+    return String();
+}
 #endif
 
 #if !ASSERT_ENABLED

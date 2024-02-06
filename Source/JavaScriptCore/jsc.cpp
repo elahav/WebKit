@@ -147,6 +147,10 @@
 #include <arm/arch.h>
 #endif
 
+#if PLATFORM(QT)
+#include <QCoreApplication>
+#endif
+
 #if OS(DARWIN) && PLATFORM(MAC)
 #include <libproc.h>
 #endif
@@ -3443,6 +3447,10 @@ int main(int argc, char** argv)
     timeBeginPeriod(1);
 #endif
 
+#if PLATFORM(QT)
+    QCoreApplication app(argc, argv);
+#endif
+
 #if PLATFORM(GTK)
     if (!setlocale(LC_ALL, ""))
         WTFLogAlways("Locale not supported by C library.\n\tUsing the fallback 'C' locale.");
@@ -4288,7 +4296,7 @@ int jscmain(int argc, char** argv)
     if (!gigacageDisableRequested)
         Gigacage::forbidDisablingPrimitiveGigacage();
 
-#if PLATFORM(COCOA)
+#if PLATFORM(COCOA) || (PLATFORM(QT) && OS(DARWIN))
     auto& memoryPressureHandler = MemoryPressureHandler::singleton();
     {
         auto queue = adoptOSObject(dispatch_queue_create("jsc shell memory pressure handler", DISPATCH_QUEUE_SERIAL));

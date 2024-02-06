@@ -805,7 +805,7 @@ void ResourceRequestBase::upgradeToHTTPS()
     setURL(newURL);
 }
 
-#if !PLATFORM(COCOA) && !USE(SOUP)
+#if !PLATFORM(COCOA) && !USE(SOUP) && !PLATFORM(QT)
 unsigned initializeMaximumHTTPConnectionCountPerHost()
 {
     // This is used by the loader to control the number of issued parallel load requests. 

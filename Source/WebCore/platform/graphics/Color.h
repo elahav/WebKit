@@ -42,6 +42,13 @@
 typedef struct CGColor* CGColorRef;
 #endif
 
+#if PLATFORM(QT)
+#include <qglobal.h>
+QT_BEGIN_NAMESPACE
+class QColor;
+QT_END_NAMESPACE
+#endif
+
 #if PLATFORM(GTK)
 typedef struct _GdkRGBA GdkRGBA;
 #endif
@@ -146,6 +153,11 @@ public:
     // Returns the underlying color if its type is inline.
     std::optional<PackedColor::RGBA> tryGetAsPackedInline() const;
     std::optional<SRGBA<uint8_t>> tryGetAsSRGBABytes() const;
+    
+#if PLATFORM(QT)
+    Color(const QColor&);
+    operator QColor() const;
+#endif
 
 #if PLATFORM(GTK)
     Color(const GdkRGBA&);

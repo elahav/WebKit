@@ -206,11 +206,23 @@ Ref<TextMetrics> CanvasRenderingContext2D::measureText(const String& text)
         ResourceLoadObserver::shared().logCanvasRead(document);
     }
 
+// QTFIXME: Adjustment may be needed after r219970, see also https://bugs.webkit.org/show_bug.cgi?id=44403
+#if PLATFORM(QT)
+    // We always use complex text shaping since it can't be turned off for QPainterPath::addText().
+    FontCascade::CodePath oldCodePath = FontCascade::codePath();
+    FontCascade::setCodePath(FontCascade::CodePath::Complex);
+#endif
+    
     String normalizedText = normalizeSpaces(text);
     const RenderStyle* computedStyle;
     auto direction = toTextDirection(state().direction, &computedStyle);
     bool override = computedStyle && isOverride(computedStyle->unicodeBidi());
     TextRun textRun(normalizedText, 0, 0, ExpansionBehavior::allowRightOnly(), direction, override, true);
+    
+#if PLATFORM(QT)
+    FontCascade::setCodePath(oldCodePath);
+#endif
+    
     return measureTextInternal(textRun);
 }
 

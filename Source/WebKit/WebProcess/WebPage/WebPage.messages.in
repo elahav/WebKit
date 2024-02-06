@@ -160,6 +160,9 @@ GenerateSyntheticEditingCommand(enum:uint8_t WebKit::SyntheticEditingCommandType
 #if !ENABLE(IOS_TOUCH_EVENTS) && ENABLE(TOUCH_EVENTS)
     TouchEvent(WebKit::WebTouchEvent event) -> (std::optional<WebKit::WebEventType> eventType, bool handled)
 #endif
+#if ENABLE(TOUCH_EVENTS) && PLATFORM(QT)
+    HighlightPotentialActivation(WebCore::IntPoint point, WebCore::IntSize area)
+#endif
 
     CancelPointer(WebCore::PointerID pointerId, WebCore::IntPoint documentPoint)
     TouchWithIdentifierWasRemoved(WebCore::PointerID pointerId)
@@ -380,6 +383,10 @@ GenerateSyntheticEditingCommand(enum:uint8_t WebKit::SyntheticEditingCommandType
 #if PLATFORM(GTK)
     FailedToShowPopupMenu()
 #endif
+#if PLATFORM(QT)
+    HidePopupMenu()
+    SelectedIndex(int32_t newIndex)
+#endif
 
 #if ENABLE(CONTEXT_MENUS)
     # Context menu.
@@ -476,9 +483,13 @@ GenerateSyntheticEditingCommand(enum:uint8_t WebKit::SyntheticEditingCommandType
     SetCanRunBeforeUnloadConfirmPanel(bool canRunBeforeUnloadConfirmPanel)
     SetCanRunModal(bool canRunModal)
 
-#if PLATFORM(GTK) || PLATFORM(WPE)
+#if PLATFORM(QT) || PLATFORM(GTK) || PLATFORM(WPE)
     CancelComposition(String text)
     DeleteSurrounding(int64_t offset, unsigned characterCount)
+#endif
+
+#if PLATFORM(QT)
+    SetComposition(String text, Vector<WebCore::CompositionUnderline> underlines, struct WebKit::EditingRange selectionRange)
 #endif
 
 #if PLATFORM(GTK)

@@ -94,6 +94,9 @@ public:
     const String& destinationFilename() const { return m_destinationFilename; }
     void setDestinationFilename(const String& d) { m_destinationFilename = d; }
 
+#if PLATFORM(QT)
+    void startTransfer(const String& filename);
+#endif
 #if PLATFORM(COCOA)
     void publishProgress(const URL&);
     void setProgress(NSProgress *progress) { m_progress = progress; }

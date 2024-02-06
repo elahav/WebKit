@@ -62,3 +62,7 @@ list(APPEND DumpRenderTree_SOURCES
 WEBKIT_EXECUTABLE_DECLARE(DumpRenderTree)
 WEBKIT_INCLUDE_CONFIG_FILES_IF_EXISTS()
 WEBKIT_EXECUTABLE(DumpRenderTree)
+
+if (${PORT} STREQUAL "Qt")
+    set_target_properties(DumpRenderTree PROPERTIES AUTOMOC ON)
+endif ()

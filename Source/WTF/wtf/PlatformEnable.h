@@ -100,6 +100,11 @@
 #include <wtf/PlatformEnableGlib.h>
 #endif
 
+/* --------- Qt port --------- */
+#if PLATFORM(QT)
+#include <wtf/PlatformEnableQt.h>
+#endif
+
 /* ---------  ENABLE macro defaults --------- */
 
 /* Do not use PLATFORM() tests in this section ! */
@@ -861,7 +866,7 @@
 #endif
 
 /* CSS Selector JIT Compiler */
-#if !defined(ENABLE_CSS_SELECTOR_JIT) && ((CPU(X86_64) || CPU(ARM64) || (CPU(ARM_THUMB2) && OS(DARWIN))) && ENABLE(JIT) && (OS(DARWIN) || OS(WINDOWS) || PLATFORM(GTK) || PLATFORM(WPE)))
+#if !defined(ENABLE_CSS_SELECTOR_JIT) && ((CPU(X86_64) || CPU(ARM64) || (CPU(ARM_THUMB2) && OS(DARWIN))) && ENABLE(JIT) && (OS(DARWIN) || OS(WINDOWS) || PLATFORM(GTK) || PLATFORM(WPE) || PLATFORM(QT)))
 #define ENABLE_CSS_SELECTOR_JIT 1
 #endif
 

@@ -110,6 +110,10 @@ public:
     
     Client& client() { return m_client; }
 
+#if PLATFORM(QT)
+    void startTransfer(DownloadID, const String& destination);
+#endif
+
 private:
     CheckedRef<Client> m_client;
     HashMap<DownloadID, std::unique_ptr<PendingDownload>> m_pendingDownloads;

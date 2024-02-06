@@ -78,7 +78,11 @@ class FragmentedSharedBuffer;
 class SynchronousLoaderMessageQueue;
 class Timer;
 
-class ResourceHandle : public RefCounted<ResourceHandle>, public AuthenticationClient {
+class ResourceHandle : public RefCounted<ResourceHandle>
+#if !PLATFORM(QT)
+, public AuthenticationClient
+#endif
+{
 public:
     WEBCORE_EXPORT static RefPtr<ResourceHandle> create(NetworkingContext*, const ResourceRequest&, ResourceHandleClient*, bool defersLoading, bool shouldContentSniff, ContentEncodingSniffingPolicy, RefPtr<SecurityOrigin>&& sourceOrigin, bool isMainFrameNavigation);
     WEBCORE_EXPORT static void loadResourceSynchronously(NetworkingContext*, const ResourceRequest&, StoredCredentialsPolicy, SecurityOrigin*, ResourceError&, ResourceResponse&, Vector<uint8_t>& data);
@@ -90,6 +94,7 @@ public:
 
     void didReceiveResponse(ResourceResponse&&, CompletionHandler<void()>&&);
 
+#if !PLATFORM(QT)
     bool shouldUseCredentialStorage();
     void didReceiveAuthenticationChallenge(const AuthenticationChallenge&);
     void receivedCredential(const AuthenticationChallenge&, const Credential&) override;
@@ -97,6 +102,7 @@ public:
     void receivedCancellation(const AuthenticationChallenge&) override;
     void receivedRequestToPerformDefaultHandling(const AuthenticationChallenge&) override;
     void receivedChallengeRejection(const AuthenticationChallenge&) override;
+#endif
 
 #if PLATFORM(COCOA)
     bool tryHandlePasswordBasedAuthentication(const AuthenticationChallenge&);
@@ -122,6 +128,10 @@ public:
     static bool shouldContentSniffURL(const URL&);
 
     ContentEncodingSniffingPolicy contentEncodingSniffingPolicy() const;
+
+#if PLATFORM(QT)
+    ResourceHandleInternal* getInternal() { return d.get(); }
+#endif
 
     WEBCORE_EXPORT static void forceContentSniffing();
 
@@ -183,8 +193,10 @@ private:
     bool start();
     static void platformLoadResourceSynchronously(NetworkingContext*, const ResourceRequest&, StoredCredentialsPolicy, SecurityOrigin*, ResourceError&, ResourceResponse&, Vector<uint8_t>& data);
 
+#if !PLATFORM(QT)
     void refAuthenticationClient() override { ref(); }
     void derefAuthenticationClient() override { deref(); }
+#endif
 
 #if PLATFORM(COCOA)
     enum class SchedulingBehavior { Asynchronous, Synchronous };

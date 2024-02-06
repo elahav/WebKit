@@ -321,6 +321,36 @@ static String trimInputSample(CharType* p, size_t length)
     return makeString(StringView(p, length).left(maxInputSampleSize), horizontalEllipsis);
 }
 
+#if PLATFORM(QT)
+ContentDispositionType contentDispositionType(const String& contentDisposition)
+{
+    if (contentDisposition.isEmpty())
+        return ContentDispositionNone;
+
+    Vector<String> parameters = contentDisposition.split(';');
+    String dispositionType = parameters[0];
+    dispositionType = dispositionType.trim(deprecatedIsSpaceOrNewline);
+
+    if (equalLettersIgnoringASCIICase(dispositionType, "inline"_s))
+        return ContentDispositionInline;
+
+    // Some broken sites just send bogus headers like
+    //
+    //   Content-Disposition: ; filename="file"
+    //   Content-Disposition: filename="file"
+    //   Content-Disposition: name="file"
+    //
+    // without a disposition token... screen those out.
+    if (!isValidHTTPToken(dispositionType))
+        return ContentDispositionNone;
+
+    // We have a content-disposition of "attachment" or unknown.
+    // RFC 2183, section 2.8 says that an unknown disposition
+    // value should be treated as "attachment"
+    return ContentDispositionAttachment;
+}
+#endif
+
 std::optional<WallTime> parseHTTPDate(const String& value)
 {
     double dateInMillisecondsSinceEpoch = parseDateFromNullTerminatedCharacters(value.utf8().data());

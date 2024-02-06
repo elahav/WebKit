@@ -68,6 +68,9 @@
 #if USE(CURL)
 #include "NetworkSessionCurl.h"
 #endif
+#if PLATFORM(QT)
+#include "NetworkSessionQt.h"
+#endif
 
 namespace WebKit {
 using namespace WebCore;
@@ -84,6 +87,9 @@ std::unique_ptr<NetworkSession> NetworkSession::create(NetworkProcess& networkPr
 #endif
 #if USE(CURL)
     return NetworkSessionCurl::create(networkProcess, parameters);
+#endif
+#if PLATFORM(QT)
+    return NetworkSessionQt::create(networkProcess, WTFMove(parameters));
 #endif
 }
 

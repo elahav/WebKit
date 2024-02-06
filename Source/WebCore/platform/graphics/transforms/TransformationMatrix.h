@@ -40,9 +40,12 @@ typedef struct CATransform3D CATransform3D;
 #endif
 #if USE(CG)
 typedef struct CGAffineTransform CGAffineTransform;
+#elif PLATFORM(QT)
+#include <QMatrix4x4>
+#include <QTransform>
 #endif
 
-#if PLATFORM(WIN) || (PLATFORM(GTK) && OS(WINDOWS))
+#if PLATFORM(WIN) || (PLATFORM(GTK) && OS(WINDOWS)) || (PLATFORM(QT) && OS(WINDOWS))
 #if COMPILER(MINGW) && !COMPILER(MINGW64)
 typedef struct _XFORM XFORM;
 #else
@@ -133,6 +136,11 @@ public:
     static TransformationMatrix fromProjection(double fovy, double aspect, double depthNear, double depthFar);
 
     WEBCORE_EXPORT static const TransformationMatrix identity;
+
+#if PLATFORM(QT)
+    TransformationMatrix(const QTransform&);
+    TransformationMatrix(const QMatrix4x4&);
+#endif
 
     void setMatrix(double a, double b, double c, double d, double e, double f)
     {
@@ -395,9 +403,12 @@ public:
 #if USE(CG)
     WEBCORE_EXPORT TransformationMatrix(const CGAffineTransform&);
     WEBCORE_EXPORT operator CGAffineTransform() const;
+#elif PLATFORM(QT)
+    operator QTransform() const;
+    operator QMatrix4x4() const;
 #endif
 
-#if PLATFORM(WIN) || (PLATFORM(GTK) && OS(WINDOWS))
+#if PLATFORM(WIN) || (PLATFORM(GTK) && OS(WINDOWS)) || (PLATFORM(QT) && OS(WINDOWS))
     WEBCORE_EXPORT operator XFORM() const;
 #endif
 

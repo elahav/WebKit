@@ -1,0 +1,14 @@
+--- Source/WebCore/html/HTMLObjectElement.cpp
++++ Source/WebCore/html/HTMLObjectElement.cpp
+@@ -203,6 +203,11 @@ void HTMLObjectElement::parametersForPlugin(Vector<AtomString>& paramNames, Vect
+     // resource's URL to be given by a param named "src", "movie", "code" or "url"
+     // if we know that resource points to a plug-in.
+ 
++#if PLATFORM(QT)
++    if (MIMETypeRegistry::isApplicationPluginMIMEType(serviceType))
++        return;
++#endif
++
+     if (url.isEmpty() && !urlParameter.isEmpty()) {
+         auto& loader = document().frame()->loader().subframeLoader();
+         if (loader.resourceWillUsePlugin(urlParameter, serviceType))

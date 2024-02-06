@@ -59,7 +59,7 @@
 
 namespace IPC {
 
-#if PLATFORM(COCOA)
+#if USE(MACH_PORTS)
 // The IPC connection gets killed if the incoming message queue reaches 50000 messages before the main thread has a chance to dispatch them.
 constexpr size_t maxPendingIncomingMessagesKillingThreshold { 50000 };
 #endif

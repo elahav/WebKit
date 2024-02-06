@@ -403,7 +403,7 @@ inline WKContextMenuItemTag toAPI(WebCore::ContextMenuAction action)
     case WebCore::ContextMenuItemTagPauseAnimation:
         return kWKContextMenuItemTagPauseAnimation;
 #endif // ENABLE(ACCESSIBILITY_ANIMATION_CONTROL)
-#if PLATFORM(GTK)
+#if PLATFORM(GTK) || PLATFORM(QT)
     case WebCore::ContextMenuItemTagCopyImageURLToClipboard:
         return kWKContextMenuItemTagCopyImageURLToClipboard;
 #endif
@@ -423,7 +423,7 @@ inline WKContextMenuItemTag toAPI(WebCore::ContextMenuAction action)
         return kWKContextMenuItemTagCut;
     case WebCore::ContextMenuItemTagPaste:
         return kWKContextMenuItemTagPaste;
-#if PLATFORM(GTK)
+#if PLATFORM(GTK) || PLATFORM(QT)
     case WebCore::ContextMenuItemTagSelectAll:
         return kWKContextMenuItemTagSelectAll;
 #endif
@@ -575,6 +575,10 @@ inline WKContextMenuItemTag toAPI(WebCore::ContextMenuAction action)
     case WebCore::ContextMenuItemTagChangeBack:
         return kWKContextMenuItemTagChangeBack;
 #endif
+#if PLATFORM(QT)
+    case WebCore::ContextMenuItemTagOpenLinkInThisWindow:
+        return kWKContextMenuItemTagOpenLinkInThisWindow;
+#endif
     case WebCore::ContextMenuItemTagShareMenu:
         return kWKContextMenuItemTagShareMenu;
     case WebCore::ContextMenuItemTagLookUpImage:
@@ -618,7 +622,7 @@ inline WebCore::ContextMenuAction toImpl(WKContextMenuItemTag tag)
         return WebCore::ContextMenuItemTagPauseAnimation;
 #endif // ENABLE(ACCESSIBILITY_ANIMATION_CONTROL)
     case kWKContextMenuItemTagOpenFrameInNewWindow:
-#if PLATFORM(GTK)
+#if PLATFORM(GTK) || PLATFORM(QT)
     case kWKContextMenuItemTagCopyImageURLToClipboard:
         return WebCore::ContextMenuItemTagCopyImageURLToClipboard;
 #endif
@@ -637,7 +641,7 @@ inline WebCore::ContextMenuAction toImpl(WKContextMenuItemTag tag)
         return WebCore::ContextMenuItemTagCut;
     case kWKContextMenuItemTagPaste:
         return WebCore::ContextMenuItemTagPaste;
-#if PLATFORM(GTK)
+#if PLATFORM(GTK) || PLATFORM(QT)
     case kWKContextMenuItemTagSelectAll:
         return WebCore::ContextMenuItemTagSelectAll;
 #endif
@@ -790,6 +794,10 @@ inline WebCore::ContextMenuAction toImpl(WKContextMenuItemTag tag)
         return WebCore::ContextMenuItemTagChangeBack;
     case kWKContextMenuItemTagShareMenu:
         return WebCore::ContextMenuItemTagShareMenu;
+#endif
+#if PLATFORM(QT)
+        case kWKContextMenuItemTagOpenLinkInThisWindow:
+            return WebCore::ContextMenuItemTagOpenLinkInThisWindow;
 #endif
     case kWKContextMenuItemTagRevealImage:
         return WebCore::ContextMenuItemTagLookUpImage;

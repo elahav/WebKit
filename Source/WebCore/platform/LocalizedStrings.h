@@ -65,12 +65,15 @@ namespace WebCore {
 
 #if ENABLE(CONTEXT_MENUS)
     WEBCORE_EXPORT String contextMenuItemTagOpenLinkInNewWindow();
+#if PLATFORM(QT)
+    String contextMenuItemTagOpenLinkInThisWindow();
+#endif
     String contextMenuItemTagDownloadLinkToDisk();
     String contextMenuItemTagCopyLinkToClipboard();
     String contextMenuItemTagOpenImageInNewWindow();
     String contextMenuItemTagDownloadImageToDisk();
     String contextMenuItemTagCopyImageToClipboard();
-#if PLATFORM(GTK)
+#if PLATFORM(GTK) || PLATFORM(QT)
     String contextMenuItemTagCopyImageURLToClipboard();
 #endif
     String contextMenuItemTagOpenFrameInNewWindow();
@@ -96,7 +99,11 @@ namespace WebCore {
     String contextMenuItemTagUnicodeInsertZWSMark();
     String contextMenuItemTagUnicodeInsertZWJMark();
     String contextMenuItemTagUnicodeInsertZWNJMark();
+#endif
+#if PLATFORM(GTK) || PLATFORM(QT)
     String contextMenuItemTagSelectAll();
+#endif
+#if PLATFORM(GTK)
     String contextMenuItemTagInsertEmoji();
 #endif
     String contextMenuItemTagNoGuessesFound();
@@ -147,16 +154,23 @@ namespace WebCore {
 #endif
     String contextMenuItemTagOpenVideoInNewWindow();
     String contextMenuItemTagOpenAudioInNewWindow();
+    String contextMenuItemTagOpenMediaInNewWindow();
     String contextMenuItemTagDownloadVideoToDisk();
     String contextMenuItemTagDownloadAudioToDisk();
+    String contextMenuItemTagDownloadMediaToDisk();
     String contextMenuItemTagCopyVideoLinkToClipboard();
     String contextMenuItemTagCopyAudioLinkToClipboard();
+    String contextMenuItemTagCopyMediaLinkToClipboard();
     String contextMenuItemTagToggleMediaControls();
     String contextMenuItemTagShowMediaControls();
     String contextMenuItemTagHideMediaControls();
     String contextMenuItemTagToggleMediaLoop();
     String contextMenuItemTagEnterVideoFullscreen();
     String contextMenuItemTagExitVideoFullscreen();
+#if PLATFORM(QT)
+    String contextMenuItemTagToggleVideoFullscreen();
+    String contextMenuItemTagMediaUnmute();
+#endif
 #if PLATFORM(MAC) && ENABLE(VIDEO_PRESENTATION_MODE)
     String contextMenuItemTagEnterVideoEnhancedFullscreen();
     String contextMenuItemTagExitVideoEnhancedFullscreen();

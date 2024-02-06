@@ -141,6 +141,10 @@ public:
     void setNeedsVisibleRectAdjustment();
     void purgeBackingStores();
 
+#if PLATFORM(QT) // QTFIXME: For TextureMapperImageBuffer. Do we need it?
+    static void setShouldSupportContentsTiling(bool);
+#endif
+
     const RefPtr<Nicosia::CompositionLayer>& compositionLayer() const;
 
     class AnimatedBackingStoreHost : public ThreadSafeRefCounted<AnimatedBackingStoreHost> {

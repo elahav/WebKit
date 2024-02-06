@@ -2766,7 +2766,7 @@ void LocalFrameView::delegatedScrollingModeDidChange()
     }
 }
 
-#if USE(COORDINATED_GRAPHICS)
+#if USE(COORDINATED_GRAPHICS) || PLATFORM(QT)
 void LocalFrameView::setFixedVisibleContentRect(const IntRect& visibleContentRect)
 {
     bool visibleContentSizeDidChange = false;

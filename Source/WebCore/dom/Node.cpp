@@ -101,6 +101,10 @@
 #include "ContentChangeObserver.h"
 #endif
 
+#if ENABLE(QT_GESTURE_EVENTS)
+#include "GestureEvent.h"
+#endif
+
 namespace WebCore {
 
 WTF_MAKE_ISO_ALLOCATED_IMPL(Node);
@@ -2655,6 +2659,25 @@ void Node::dispatchDOMActivateEvent(Event& underlyingClickEvent)
     if (event->defaultHandled())
         underlyingClickEvent.setDefaultHandled();
 }
+
+#if ENABLE(QT_GESTURE_EVENTS)
+bool Node::dispatchGestureEvent(const PlatformGestureEvent& event)
+{
+    RefPtr<GestureEvent> gestureEvent = GestureEvent::create(document().defaultView(), event);
+    if (!gestureEvent.get())
+        return false;
+
+    if (!is<Element>(*this))
+        return false;
+    if (downcast<Element>(*this).isDisabledFormControl())
+        return false;
+
+    EventDispatcher::dispatchEvent(this, *gestureEvent);
+
+    ASSERT(!gestureEvent->defaultPrevented());
+    return gestureEvent->defaultHandled() || gestureEvent->defaultPrevented();
+}
+#endif
 
 void Node::dispatchInputEvent()
 {

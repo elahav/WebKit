@@ -90,6 +90,10 @@
 #define USE_CF 1
 #endif
 
+#if PLATFORM(QT) && OS(DARWIN)
+#define USE_CF 1
+#endif
+
 #if PLATFORM(COCOA) || (PLATFORM(GTK) || PLATFORM(WPE))
 #define USE_FILE_LOCK 1
 #endif
@@ -122,7 +126,7 @@
 #define USE_PTHREADS 1
 #endif
 
-#if OS(DARWIN) && !PLATFORM(GTK)
+#if OS(DARWIN) && !PLATFORM(GTK) && !PLATFORM(QT)
 #define USE_ACCELERATE 1
 #endif
 
@@ -232,7 +236,9 @@
 #endif
 
 #if WTF_DEFAULT_EVENT_LOOP
-#if USE(GLIB)
+#if PLATFORM(QT)
+/* Define nothing */
+#elif USE(GLIB)
 /* Use GLib's event loop abstraction. Primarily GTK port uses it. */
 #define USE_GLIB_EVENT_LOOP 1
 #elif OS(WINDOWS)
@@ -300,6 +306,10 @@
 #else
 #define USE_PTHREAD_JIT_PERMISSIONS_API 1
 #endif
+#endif
+
+#if PLATFORM(QT) && OS(DARWIN) && __MAC_OS_X_VERSION_MIN_REQUIRED >= 110000
+#define USE_PTHREAD_JIT_PERMISSIONS_API 1
 #endif
 
 #if PLATFORM(COCOA)

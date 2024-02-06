@@ -43,6 +43,15 @@ typedef struct CGImage *CGImageRef;
 using PlatformWKView = TestRunnerWKWebView*;
 using PlatformWindow = WebKitTestRunnerWindow*;
 using PlatformImage = RetainPtr<CGImageRef>;
+#elif defined(BUILDING_QT__)
+QT_BEGIN_NAMESPACE
+class QQuickView;
+class QEventLoop;
+class QImage;
+QT_END_NAMESPACE
+class QQuickWebView;
+typedef QQuickWebView* PlatformWKView;
+typedef QQuickView* PlatformWindow;
 #elif defined(BUILDING_GTK__)
 typedef struct _GtkWidget GtkWidget;
 typedef WKViewRef PlatformWKView;
@@ -61,6 +70,10 @@ using PlatformWindow = HWND;
 #if USE(CAIRO)
 #include <cairo.h>
 using PlatformImage = cairo_surface_t*;
+#endif
+
+#if PLATFORM(QT)
+typedef QImage PlatformImage;
 #endif
 
 namespace WTR {
@@ -87,6 +100,14 @@ public:
 
     void resizeTo(unsigned width, unsigned height, WebViewSizingMode = WebViewSizingMode::Default);
     void focus();
+
+#if PLATFORM(QT)
+    bool sendEvent(QEvent*);
+    void postEvent(QEvent*);
+    void setModalEventLoop(QEventLoop* eventLoop) { m_modalEventLoop = eventLoop; }
+    // Window snapshot can be disabled on Qt with QT_WEBKIT_DISABLE_UIPROCESS_DUMPPIXELS=1 environment variable (necessary for xvfb)
+    static bool windowSnapshotEnabled();
+#endif
 
     WKRect windowFrame();
     void setWindowFrame(WKRect, WebViewSizingMode = WebViewSizingMode::Default);
@@ -137,6 +158,10 @@ private:
 #endif
 #if PLATFORM(GTK)
     GtkWidget* m_otherWindow { nullptr };
+#endif
+#if PLATFORM(QT)
+    bool m_usingFixedLayout;
+    QEventLoop* m_modalEventLoop;
 #endif
 };
 

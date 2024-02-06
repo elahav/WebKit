@@ -47,10 +47,11 @@ if (NOT HAS_RUN_WEBKIT_COMMON)
         JSCOnly
         Mac
         PlayStation
+        Qt
         WPE
         WinCairo
     )
-    set(PORT "NOPORT" CACHE STRING "choose which WebKit port to build (one of ${ALL_PORTS})")
+    set(PORT "Qt" CACHE STRING "choose which WebKit port to build (one of ${ALL_PORTS})")
 
     list(FIND ALL_PORTS ${PORT} RET)
     if (${RET} EQUAL -1)

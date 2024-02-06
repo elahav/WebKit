@@ -400,3 +400,4 @@ bool HTMLObjectElement::canContainRangeEndPoint() const
 }
 
 }
+

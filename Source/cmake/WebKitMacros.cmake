@@ -335,8 +335,17 @@ macro(WEBKIT_FRAMEWORK _target)
         add_custom_command(TARGET ${_target} POST_BUILD COMMAND ${${_target}_POST_BUILD_COMMAND} VERBATIM)
     endif ()
 
-    if (APPLE AND NOT PORT STREQUAL "GTK" AND NOT ${${_target}_LIBRARY_TYPE} MATCHES STATIC)
+
+    if (APPLE AND NOT PORT STREQUAL "GTK" AND NOT ${${_target}_LIBRARY_TYPE} MATCHES STATIC AND (MACOS_BUILD_FRAMEWORKS OR NOT PORT STREQUAL "Qt"))
         set_target_properties(${_target} PROPERTIES FRAMEWORK TRUE)
+        if (${_target}_PUBLIC_HEADERS)
+            set_target_properties(${_target} PROPERTIES PUBLIC_HEADER "${${_target}_PUBLIC_HEADERS}")
+            if (${_target}_PRIVATE_HEADERS)
+                foreach (CURRENT_PRIVATE_HEADER ${${_target}_PRIVATE_HEADERS})
+                    set_property(SOURCE ${CURRENT_PRIVATE_HEADER} PROPERTY MACOSX_PACKAGE_LOCATION ${${_target}_PRIVATE_HEADERS_LOCATION})
+                endforeach ()
+            endif ()
+        endif ()
         install(TARGETS ${_target} FRAMEWORK DESTINATION ${LIB_INSTALL_DIR})
     endif ()
 
@@ -454,4 +463,15 @@ macro(WEBKIT_CREATE_SYMLINK target src dest)
         COMMAND ln -sf ${src} ${dest}
         DEPENDS ${dest}
         COMMENT "Create symlink from ${src} to ${dest}")
+endmacro()
+
+# TODO: Unify usage of prefix headers and PCH with WebCore and WebKit2
+macro(ADD_PREFIX_HEADER _target _header)
+    if (COMPILER_IS_GCC_OR_CLANG)
+        get_target_property(OLD_COMPILE_FLAGS ${_target} COMPILE_FLAGS)
+        if (${OLD_COMPILE_FLAGS} STREQUAL "OLD_COMPILE_FLAGS-NOTFOUND")
+            set(OLD_COMPILE_FLAGS "")
+        endif ()
+        set_target_properties(${_target} PROPERTIES COMPILE_FLAGS "${OLD_COMPILE_FLAGS} -include ${_header}")
+    endif ()
 endmacro()

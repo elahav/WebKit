@@ -2119,6 +2119,13 @@ void NetworkProcess::cancelDownload(DownloadID downloadID, CompletionHandler<voi
     downloadManager().cancelDownload(downloadID, WTFMove(completionHandler));
 }
 
+#if PLATFORM(QT)
+void NetworkProcess::startTransfer(DownloadID downloadID, const String& destination)
+{
+    downloadManager().startTransfer(downloadID, destination);
+}
+#endif
+
 #if PLATFORM(COCOA)
 void NetworkProcess::publishDownloadProgress(DownloadID downloadID, const URL& url, SandboxExtension::Handle&& sandboxExtensionHandle)
 {

@@ -1,0 +1,16 @@
+--- Source/WebCore/platform/graphics/FontPlatformData.h
++++ Source/WebCore/platform/graphics/FontPlatformData.h
+@@ -150,6 +175,13 @@ public:
+     FontPlatformData(cairo_font_face_t*, RefPtr<FcPattern>&&, float size, bool fixedWidth, bool syntheticBold, bool syntheticOblique, FontOrientation, const FontCustomPlatformData* = nullptr);
+ #endif
+ 
++#if PLATFORM(QT)
++    FontPlatformData(const FontDescription&, const AtomString& family, const FontCustomPlatformData* = nullptr);
++    FontPlatformData(const QRawFont& rawFont, const FontCustomPlatformData* = nullptr);
++
++    friend class FontPlatformDataPrivate;
++#endif
++
+     class Attributes {
+     public:
+         Attributes(float size, FontOrientation orientation, FontWidthVariant widthVariant, TextRenderingMode textRenderingMode, bool syntheticBold, bool syntheticOblique)

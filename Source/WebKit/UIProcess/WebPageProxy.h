@@ -40,6 +40,13 @@
 #include <WebCore/PlatformTextAlternatives.h>
 #endif
 
+#if PLATFORM(QT)
+#include "ArgumentCodersQt.h"
+#include "QtNetworkRequestData.h"
+
+class QQuickNetworkReply;
+#endif
+
 namespace API {
 class Attachment;
 class ContentWorld;
@@ -517,6 +524,10 @@ enum class WebContentMode : uint8_t;
 enum class WebEventModifier : uint8_t;
 enum class WebEventType : uint8_t;
 enum class WindowKind : uint8_t;
+    
+#if ENABLE(QT_GESTURE_EVENTS)
+    class WebGestureEvent;
+#endif
 
 template<typename> class MonotonicObjectIdentifier;
 
@@ -1053,9 +1064,20 @@ public:
 
     bool updateLayoutViewportParameters(const RemoteLayerTreeTransaction&);
 
-#if PLATFORM(GTK) || PLATFORM(WPE)
+#if PLATFORM(QT)
+        void authenticationRequiredRequest(const String& hostname, const String& realm, const String& prefilledUsername, String& username, String& password);
+        void certificateVerificationRequest(const String& hostname, bool& ignoreErrors);
+        void proxyAuthenticationRequiredRequest(const String& hostname, uint16_t port, const String& prefilledUsername, String& username, String& password);
+#endif // PLATFORM(QT)
+        
+#if PLATFORM(QT) || PLATFORM(GTK) || PLATFORM(WPE)
     void cancelComposition(const String& compositionString);
     void deleteSurrounding(int64_t offset, unsigned characterCount);
+
+#if PLATFORM(QT)
+    // QTFIXME: this was deprecated in other ports
+    void setComposition(const String&, const Vector<WebCore::CompositionUnderline>&, const EditingRange& selectionRange);
+#endif
 
     void setInputMethodState(std::optional<InputMethodState>&&);
 #endif
@@ -1177,6 +1199,10 @@ public:
     void handleGestureEvent(const NativeWebGestureEvent&);
 #endif
 
+#if ENABLE(QT_GESTURE_EVENTS)
+    void handleGestureEvent(const WebGestureEvent&);
+#endif
+
 #if ENABLE(IOS_TOUCH_EVENTS)
     void resetPotentialTapSecurityOrigin();
     void handlePreventableTouchEvent(NativeWebTouchEvent&);
@@ -1184,6 +1210,9 @@ public:
 
 #elif ENABLE(TOUCH_EVENTS)
     void handleTouchEvent(const NativeWebTouchEvent&);
+#if PLATFORM(QT)
+    void handlePotentialActivation(const WebCore::IntPoint& touchPoint, const WebCore::IntSize& touchArea);
+#endif
 #endif
 
 #if PLATFORM(MAC)
@@ -1517,6 +1546,8 @@ public:
 
     bool hasRunningProcess() const;
     void launchInitialProcessIfNecessary();
+
+    const String& urlAtProcessExit() const { return m_urlAtProcessExit; }
 
 #if ENABLE(DRAG_SUPPORT)
     std::optional<WebCore::DragOperation> currentDragOperation() const { return m_currentDragOperation; }
@@ -2399,6 +2430,10 @@ private:
     void requestPointerLock();
     void requestPointerUnlock();
 #endif
+#if PLATFORM(QT)
+    void changeSelectedIndex(int32_t newSelectedIndex) override;
+    void closePopupMenu() override;
+#endif
 
     void didCreateMainFrame(WebCore::FrameIdentifier);
     void didCreateSubframe(WebCore::FrameIdentifier parent, WebCore::FrameIdentifier newFrameID, const String& frameName);
@@ -2569,6 +2604,10 @@ private:
 #if HAVE(TOUCH_BAR)
     void setIsTouchBarUpdateSupressedForHiddenContentEditable(bool);
     void setIsNeverRichlyEditableForTouchBar(bool);
+#endif
+    
+#if PLATFORM(QT)
+    void willSetInputMethodState();
 #endif
 
     void requestDOMPasteAccess(WebCore::DOMPasteAccessCategory, const WebCore::IntRect&, const String&, CompletionHandler<void(WebCore::DOMPasteAccessResponse)>&&);
@@ -3183,6 +3222,10 @@ private:
 
     bool m_shouldSuppressAppLinksInNextNavigationPolicyDecision { false };
 
+#if ENABLE(QT_GESTURE_EVENTS)
+    Deque<WebGestureEvent> m_gestureEventQueue;
+#endif
+
 #if HAVE(APP_SSO)
     bool m_shouldSuppressSOAuthorizationInNextNavigationPolicyDecision { false };
 #endif
@@ -3275,6 +3318,9 @@ private:
     bool m_shouldSuppressNextAutomaticNavigationSnapshot { false };
     bool m_madeViewBlankDueToLackOfRenderingUpdate { false };
 
+#if PLATFORM(QT)
+    WTF::HashSet<RefPtr<QtRefCountedNetworkRequestData>> m_applicationSchemeRequests;
+#endif
 #if PLATFORM(COCOA)
     using TemporaryPDFFileMap = HashMap<String, String>;
     TemporaryPDFFileMap m_temporaryPDFFiles;

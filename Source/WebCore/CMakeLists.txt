@@ -2855,9 +2855,13 @@ if (NOT INTERNAL_BUILD)
     add_dependencies(WebCore_CopyPrivateHeaders WebCore)
 endif ()
 
+if (NOT MSVC AND WIN32 AND ${PORT} STREQUAL "Qt")
+ADD_PREFIX_HEADER(WebCoreTestSupport "testing/js/WebCoreTestSupportPrefix.h")
+endif ()
+
 WEBKIT_FRAMEWORK(WebCore)
 
-if (APPLE)
+if (APPLE AND NOT ${PORT} STREQUAL "Qt")
     set_target_properties(WebCore PROPERTIES LINK_FLAGS "-weak-lxslt -sub_library libobjc -umbrella WebKit -allowable_client WebCoreTestSupport -allowable_client WebKit2 -allowable_client WebKitLegacy")
 endif ()
 
@@ -2887,4 +2891,9 @@ WEBKIT_LIBRARY(WebCoreTestSupport)
 if (${WebCore_LIBRARY_TYPE} MATCHES "SHARED")
     set_target_properties(WebCore PROPERTIES VERSION ${PROJECT_VERSION} SOVERSION ${PROJECT_VERSION_MAJOR})
     install(TARGETS WebCore DESTINATION "${LIB_INSTALL_DIR}")
+endif ()
+
+QT_ADD_EXTRA_WEBKIT_TARGET_EXPORT(WebCore)
+if (ENABLE_TEST_SUPPORT)
+    QT_ADD_EXTRA_WEBKIT_TARGET_EXPORT(WebCoreTestSupport)
 endif ()

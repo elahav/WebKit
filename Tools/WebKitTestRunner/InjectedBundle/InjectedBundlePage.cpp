@@ -54,9 +54,13 @@
 #include <wtf/text/StringBuilder.h>
 #include <wtf/unicode/CharacterNames.h>
 
-#if USE(CF)
+#if USE(CF) && !PLATFORM(QT)
 #include "WebArchiveDumpSupport.h"
 #include <wtf/text/cf/StringConcatenateCF.h>
+#endif
+
+#if PLATFORM(QT)
+#include "DumpRenderTreeSupportQt.h"
 #endif
 
 using namespace std;
@@ -377,7 +381,11 @@ void InjectedBundlePage::resetAfterTest()
     // (see <https://bugs.webkit.org/show_bug.cgi?id=138334>), however for tests, we want to start each one with a clean state.
     WKBundleFrameFocus(frame);
 
+#if PLATFORM(QT)
+    DumpRenderTreeSupportQt::resetInternalsObject(context);
+#else
     WebCoreTestSupport::resetInternalsObject(WKBundleFrameGetJavaScriptContext(frame));
+#endif
     assignedUrlsCache().clear();
 
     // User scripts need to be removed after the test and before loading about:blank, as otherwise they would run in about:blank, and potentially leak results into a subsequest test.
@@ -750,7 +758,7 @@ void InjectedBundlePage::dumpAllFramesText(StringBuilder& stringBuilder)
 
 void InjectedBundlePage::dumpDOMAsWebArchive(WKBundleFrameRef frame, StringBuilder& stringBuilder)
 {
-#if USE(CF)
+#if USE(CF) && !PLATFORM(QT)
     auto wkData = adoptWK(WKBundleFrameCopyWebArchive(frame));
     auto cfData = adoptCF(CFDataCreate(0, WKDataGetBytes(wkData.get()), WKDataGetSize(wkData.get())));
     stringBuilder.append(WebCoreTestSupport::createXMLStringFromWebArchiveData(cfData.get()).get());
@@ -891,7 +899,11 @@ void InjectedBundlePage::didClearWindowForFrame(WKBundleFrameRef frame, WKBundle
     injectedBundle.textInputController()->makeWindowObject(context);
     injectedBundle.accessibilityController()->makeWindowObject(context);
 
+#if PLATFORM(QT)
+    DumpRenderTreeSupportQt::injectInternalsObject(context);
+#else
     WebCoreTestSupport::injectInternalsObject(context);
+#endif
 }
 
 void InjectedBundlePage::didCancelClientRedirectForFrame(WKBundleFrameRef frame)

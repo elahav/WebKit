@@ -101,6 +101,11 @@
 #include <wtf/WeakHashSet.h>
 #include <wtf/text/WTFString.h>
 
+#if PLATFORM(QT)
+#include "ArgumentCodersQt.h"
+#include "TapHighlightController.h"
+#endif
+
 #if USE(ATSPI)
 #include <WebCore/AccessibilityRootAtspi.h>
 #endif
@@ -800,6 +805,10 @@ public:
     FindController& findController() { return m_findController.get(); }
     WebFoundTextRangeController& foundTextRangeController() { return m_foundTextRangeController.get(); }
 
+#if ENABLE(TOUCH_EVENTS) && PLATFORM(QT)
+    TapHighlightController& tapHighlightController() { return m_tapHighlightController; }
+#endif
+
 #if ENABLE(GEOLOCATION)
     GeolocationPermissionRequestManager& geolocationPermissionRequestManager() { return m_geolocationPermissionRequestManager.get(); }
 #endif
@@ -1015,12 +1024,16 @@ public:
 
     SandboxExtensionTracker& sandboxExtensionTracker() { return m_sandboxExtensionTracker; }
 
-#if PLATFORM(GTK) || PLATFORM(WPE)
+#if PLATFORM(QT) || PLATFORM(GTK) || PLATFORM(WPE)
     void cancelComposition(const String& text);
     void deleteSurrounding(int64_t offset, unsigned characterCount);
 #endif
 
-#if PLATFORM(GTK)
+#if PLATFORM(QT)
+    void setComposition(const String&, const Vector<WebCore::CompositionUnderline>&, const EditingRange& selectionRange);
+#endif
+
+#if PLATFORM(GTK) || PLATFORM(QT)
     void collapseSelectionInFrame(WebCore::FrameIdentifier);
     void showEmojiPicker(WebCore::LocalFrame&);
 #endif
@@ -1202,6 +1215,10 @@ public:
 #if ENABLE(CONTEXT_MENUS)
     void startWaitingForContextMenuToShow() { m_waitingForContextMenuToShow = true; }
 #endif
+    
+#if PLATFORM(QT)
+    void setUserScripts(const Vector<String>&);
+#endif
 
     void handleWheelEvent(WebCore::FrameIdentifier, const WebWheelEvent&, const OptionSet<WebCore::WheelEventProcessingSteps>&, std::optional<bool> willStartSwipe, CompletionHandler<void(WebCore::ScrollingNodeID, std::optional<WebCore::WheelScrollGestureState>, bool handled, std::optional<WebCore::RemoteUserInputEventData>)>&&);
     WebCore::HandleUserInputEventResult wheelEvent(const WebCore::FrameIdentifier&, const WebWheelEvent&, OptionSet<WebCore::WheelEventProcessingSteps>);
@@ -1209,7 +1226,7 @@ public:
     void wheelEventHandlersChanged(bool);
     void recomputeShortCircuitHorizontalWheelEventsState();
 
-#if ENABLE(MAC_GESTURE_EVENTS)
+#if ENABLE(MAC_GESTURE_EVENTS) || ENABLE(QT_GESTURE_EVENTS)
     void gestureEvent(const WebGestureEvent&, CompletionHandler<void(std::optional<WebEventType>, bool)>&&);
 #endif
 
@@ -1843,6 +1860,9 @@ private:
     void updatePotentialTapSecurityOrigin(const WebTouchEvent&, bool wasHandled);
 #elif ENABLE(TOUCH_EVENTS)
     void touchEvent(const WebTouchEvent&, CompletionHandler<void(std::optional<WebEventType>, bool)>&&);
+#if PLATFORM(QT)
+    void highlightPotentialActivation(const WebCore::IntPoint&, const WebCore::IntSize& area);
+#endif
 #endif
 
     void cancelPointer(WebCore::PointerID, const WebCore::IntPoint&);
@@ -1997,6 +2017,10 @@ private:
 
 #if PLATFORM(GTK)
     void failedToShowPopupMenu();
+#endif
+#if PLATFORM(QT)
+    void hidePopupMenu();
+    void selectedIndex(int32_t newIndex);
 #endif
 
     void didChooseFilesForOpenPanel(const Vector<String>& files, const Vector<String>& replacementFiles);
@@ -2312,6 +2336,9 @@ private:
 #endif
 
     UniqueRef<FindController> m_findController;
+#if ENABLE(TOUCH_EVENTS) && PLATFORM(QT)
+    TapHighlightController m_tapHighlightController { this };
+#endif
 
     UniqueRef<WebFoundTextRangeController> m_foundTextRangeController;
 

@@ -78,6 +78,10 @@ namespace Style {
 struct PseudoElementIdentifier;
 }
 
+#if ENABLE(QT_GESTURE_EVENTS)
+class PlatformGestureEvent;
+#endif
+
 }
 
 WTF_ALLOW_COMPACT_POINTERS_TO_INCOMPLETE_TYPE(WebCore::RenderObject);
@@ -519,6 +523,9 @@ public:
     void dispatchSubtreeModifiedEvent();
     void dispatchDOMActivateEvent(Event& underlyingClickEvent);
 
+#if ENABLE(QT_GESTURE_EVENTS)
+    bool dispatchGestureEvent(const PlatformGestureEvent&);
+#endif
 #if ENABLE(TOUCH_EVENTS)
     virtual bool allowsDoubleTapGesture() const { return true; }
 #endif

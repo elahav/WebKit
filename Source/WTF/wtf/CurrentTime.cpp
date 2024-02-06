@@ -56,8 +56,12 @@
 #include <zircon/syscalls.h>
 #endif
 
-#if USE(GLIB)
+#if USE(GLIB) && !PLATFORM(QT)
 #include <glib.h>
+#endif
+
+#if PLATFORM(QT)
+#include <QElapsedTimer>
 #endif
 
 namespace WTF {
@@ -260,7 +264,7 @@ uint64_t ApproximateTime::toMachApproximateTime() const
 
 MonotonicTime MonotonicTime::now()
 {
-#if USE(GLIB)
+#if USE(GLIB) && !PLATFORM(QT)
     return fromRawSeconds(static_cast<double>(g_get_monotonic_time() / 1000000.0));
 #elif OS(DARWIN)
     return fromMachAbsoluteTime(mach_absolute_time());

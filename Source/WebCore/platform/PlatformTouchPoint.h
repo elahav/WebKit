@@ -24,6 +24,10 @@
 
 #if ENABLE(TOUCH_EVENTS)
 
+#if PLATFORM(QT)
+#include <QTouchEvent>
+#endif
+
 namespace WebCore {
 
 class PlatformTouchEvent;

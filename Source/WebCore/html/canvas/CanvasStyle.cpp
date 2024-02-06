@@ -44,6 +44,13 @@
 #include "OffscreenCanvas.h"
 #endif
 
+#if PLATFORM(QT)
+#include <QPainter>
+#include <QBrush>
+#include <QPen>
+#include <QColor>
+#endif
+
 namespace WebCore {
 
 bool isCurrentColorString(const String& colorString)

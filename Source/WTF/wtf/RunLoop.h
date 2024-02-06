@@ -52,6 +52,11 @@
 #include <wtf/glib/GRefPtr.h>
 #endif
 
+#if PLATFORM(QT)
+#include <QMetaType>
+class QThread;
+#endif
+
 #if USE(GENERIC_EVENT_LOOP)
 #include <wtf/RedBlackTree.h>
 #endif
@@ -146,6 +151,11 @@ public:
         WTF_EXPORT_PRIVATE void setPriority(int);
 #endif
 
+#if PLATFORM(QT)
+        // Qt uses linux's RealTimeThreads but not glib event loop
+        WTF_EXPORT_PRIVATE void setPriority(int) { }
+#endif
+
     private:
         WTF_EXPORT_PRIVATE void start(Seconds interval, bool repeat);
 
@@ -160,6 +170,11 @@ public:
         bool m_isActive { false };
 #elif USE(COCOA_EVENT_LOOP)
         RetainPtr<CFRunLoopTimerRef> m_timer;
+#elif PLATFORM(QT)
+        static void timerFired(RunLoop*, int ID);
+        int m_ID;
+        bool m_isActive { false };
+        bool m_isRepeating { false };
 #elif USE(GLIB_EVENT_LOOP)
         void updateReadyTime();
         GRefPtr<GSource> m_source;
@@ -241,6 +256,16 @@ private:
     static void performWork(void*);
     RetainPtr<CFRunLoopRef> m_runLoop;
     RetainPtr<CFRunLoopSourceRef> m_runLoopSource;
+#elif PLATFORM(QT)
+    class TimerObject;
+    class PerformWorkTimerObject;
+    PerformWorkTimerObject* m_performWorkTimer;
+    TimerObject* m_timer;
+    typedef HashMap<int, TimerBase*> TimerMap;
+    TimerMap m_activeTimers;
+    typedef HashMap<QThread*, TimerObject*> TimerObjectMap;
+    TimerObjectMap m_timerObjects;
+    Lock m_loopLock;
 #elif USE(GLIB_EVENT_LOOP)
     void notify(Event, const char*);
 
@@ -292,3 +317,7 @@ inline void assertIsCurrent(const RunLoop& runLoop) WTF_ASSERTS_ACQUIRED_CAPABIL
 using WTF::RunLoop;
 using WTF::RunLoopMode;
 using WTF::assertIsCurrent;
+
+#if PLATFORM(QT)
+Q_DECLARE_METATYPE(WTF::RunLoop::TimerBase*)
+#endif

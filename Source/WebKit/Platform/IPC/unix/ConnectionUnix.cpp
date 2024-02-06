@@ -42,7 +42,10 @@
 #include <wtf/StdLibExtras.h>
 #include <wtf/UniStdExtras.h>
 
-#if USE(GLIB)
+#if PLATFORM(QT)
+#include <QPointer>
+#include <QSocketNotifier>
+#elif USE(GLIB)
 #include <gio/gio.h>
 #endif
 
@@ -55,7 +58,7 @@
 #if defined(SOCK_SEQPACKET) && !OS(DARWIN)
 #define SOCKET_TYPE SOCK_SEQPACKET
 #else
-#if USE(GLIB)
+#if USE(GLIB) && !PLATFORM(QT)
 #define SOCKET_TYPE SOCK_STREAM
 #else
 #define SOCKET_TYPE SOCK_DGRAM
@@ -99,16 +102,20 @@ static_assert(sizeof(MessageInfo) + sizeof(AttachmentInfo) * attachmentMaxAmount
 void Connection::platformInitialize(Identifier identifier)
 {
     m_socketDescriptor = identifier.handle;
-#if USE(GLIB)
+#if USE(GLIB) && !PLATFORM(QT)
     m_socket = adoptGRef(g_socket_new_from_fd(m_socketDescriptor, nullptr));
 #endif
     m_readBuffer.reserveInitialCapacity(messageMaxSize);
     m_fileDescriptors.reserveInitialCapacity(attachmentMaxAmount);
+
+#if PLATFORM(QT)
+    m_socketNotifier = 0;
+#endif
 }
 
 void Connection::platformInvalidate()
 {
-#if USE(GLIB)
+#if USE(GLIB) && !PLATFORM(QT)
     // In the GLib platform the socket descriptor is owned by GSocket.
     m_socket = nullptr;
 #else
@@ -119,9 +126,14 @@ void Connection::platformInvalidate()
     if (!m_isConnected)
         return;
 
-#if USE(GLIB)
+#if USE(GLIB) && !PLATFORM(QT)
     m_readSocketMonitor.stop();
     m_writeSocketMonitor.stop();
+#endif
+
+#if PLATFORM(QT)
+    delete m_socketNotifier;
+    m_socketNotifier = 0;
 #endif
 
 #if PLATFORM(PLAYSTATION)
@@ -134,6 +146,26 @@ void Connection::platformInvalidate()
     m_socketDescriptor = -1;
     m_isConnected = false;
 }
+
+#if PLATFORM(QT)
+class SocketNotifierResourceGuard {
+public:
+    SocketNotifierResourceGuard(QSocketNotifier* socketNotifier)
+        : m_socketNotifier(socketNotifier)
+    {
+        m_socketNotifier.data()->setEnabled(false);
+    }
+
+    ~SocketNotifierResourceGuard()
+    {
+        if (m_socketNotifier)
+            m_socketNotifier.data()->setEnabled(true);
+    }
+
+private:
+    QPointer<QSocketNotifier> const m_socketNotifier;
+};
+#endif
 
 bool Connection::processMessage()
 {
@@ -302,6 +334,10 @@ static ssize_t readBytesFromSocket(int socketDescriptor, Vector<uint8_t>& buffer
 
 void Connection::readyReadHandler()
 {
+#if PLATFORM(QT)
+    SocketNotifierResourceGuard socketNotifierEnabler(m_socketNotifier);
+#endif
+
     while (true) {
         ssize_t bytesRead = readBytesFromSocket(m_socketDescriptor, m_readBuffer, m_fileDescriptors);
 
@@ -337,6 +373,10 @@ void Connection::readyReadHandler()
 
 bool Connection::platformPrepareForOpen()
 {
+#if PLATFORM(QT)
+    ASSERT(!m_socketNotifier);
+#endif
+
     if (setNonBlock(m_socketDescriptor))
         return true;
     ASSERT_NOT_REACHED();
@@ -347,7 +387,12 @@ void Connection::platformOpen()
 {
     RefPtr<Connection> protectedThis(this);
     m_isConnected = true;
-#if USE(GLIB)
+#if PLATFORM(QT)
+    m_socketNotifier = m_connectionQueue->registerSocketEventHandler(m_socketDescriptor, QSocketNotifier::Read,
+        [protectedThis] {
+            protectedThis->readyReadHandler();
+        });
+#elif USE(GLIB)
     m_readSocketMonitor.start(m_socket.get(), G_IO_IN, m_connectionQueue->runLoop(), [protectedThis] (GIOCondition condition) -> gboolean {
         if (condition & G_IO_HUP || condition & G_IO_ERR || condition & G_IO_NVAL) {
             protectedThis->connectionDidClose();
@@ -398,6 +443,10 @@ bool Connection::platformCanSendOutgoingMessages() const
 
 bool Connection::sendOutgoingMessage(UniqueRef<Encoder>&& encoder)
 {
+#if PLATFORM(QT)
+    ASSERT(m_socketNotifier);
+#endif
+    
     static_assert(sizeof(MessageInfo) + attachmentMaxAmount * sizeof(size_t) <= messageMaxSize, "Attachments fit to message inline");
 
     UnixMessage outputMessage(encoder.get());
@@ -497,7 +546,7 @@ bool Connection::sendOutputMessage(UnixMessage& outputMessage)
         if (errno == EINTR)
             continue;
         if (errno == EAGAIN || errno == EWOULDBLOCK) {
-#if USE(GLIB)
+#if USE(GLIB) && !PLATFORM(QT)
             m_pendingOutputMessage = makeUnique<UnixMessage>(WTFMove(outputMessage));
             m_writeSocketMonitor.start(m_socket.get(), G_IO_OUT, m_connectionQueue->runLoop(), [this, protectedThis = Ref { *this }] (GIOCondition condition) -> gboolean {
                 if (condition & G_IO_OUT) {

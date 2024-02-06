@@ -27,7 +27,7 @@
 #include "config.h"
 #include "FontCascade.h"
 
-#if USE(CAIRO)
+//#if USE(CAIRO)
 
 #include "CharacterProperties.h"
 #include "FontCache.h"
@@ -153,4 +153,4 @@ const Font* FontCascade::fontForCombiningCharacterSequence(StringView stringView
 
 } // namespace WebCore
 
-#endif // USE(CAIRO)
+//#endif // USE(CAIRO)

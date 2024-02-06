@@ -108,6 +108,10 @@
 #include <JavaScriptCore/JSGenericTypedArrayViewInlines.h>
 #include <wtf/IsoMallocInlines.h>
 
+#if PLATFORM(QT)
+#undef emit
+#endif
+
 namespace WebCore {
 
 WTF_MAKE_ISO_ALLOCATED_IMPL(WebGLRenderingContext);

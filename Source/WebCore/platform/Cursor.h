@@ -40,6 +40,8 @@ typedef HICON HCURSOR;
 #include <wtf/RetainPtr.h>
 #elif PLATFORM(GTK)
 #include "GRefPtrGtk.h"
+#elif PLATFORM(QT)
+#include <QCursor>
 #endif
 
 #if HAVE(NSCURSOR)
@@ -76,6 +78,9 @@ using PlatformCursor = RefPtr<SharedCursor>;
 using PlatformCursor = NSCursor *;
 #elif PLATFORM(GTK)
 using PlatformCursor = GRefPtr<GdkCursor>;
+#elif PLATFORM(QT) && !defined(QT_NO_CURSOR)
+// Do not need to be shared but need to be created dynamically via ensurePlatformCursor.
+using PlatformCursor = QCursor*;
 #else
 using PlatformCursor = void*;
 #endif
@@ -182,7 +187,9 @@ private:
     float m_imageScaleFactor { 1 };
 #endif
 
-#if !HAVE(NSCURSOR)
+#if PLATFORM(QT)
+    mutable std::optional<QCursor> m_platformCursor;
+#elif !HAVE(NSCURSOR)
     mutable PlatformCursor m_platformCursor { nullptr };
 #else
     mutable RetainPtr<NSCursor> m_platformCursor;

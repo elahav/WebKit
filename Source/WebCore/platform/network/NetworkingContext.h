@@ -31,6 +31,14 @@
 OBJC_CLASS NSOperationQueue;
 #endif
 
+#if PLATFORM(QT)
+QT_BEGIN_NAMESPACE
+class QObject;
+class QNetworkAccessManager;
+class QUrl;
+QT_END_NAMESPACE
+#endif
+
 #if USE(SOUP)
 typedef struct _SoupSession SoupSession;
 #endif
@@ -57,6 +65,13 @@ public:
 #endif
 
     virtual String sourceApplicationIdentifier() const { return emptyString(); }
+
+#if PLATFORM(QT)
+    // FIXME: Wrap QNetworkAccessManager into a NetworkStorageSession to make the code cross-platform.
+    virtual QObject* originatingObject() const = 0;
+    virtual QNetworkAccessManager* networkAccessManager() const = 0;
+    virtual bool mimeSniffingEnabled() const = 0;
+#endif
 
 #if PLATFORM(WIN)
     virtual ResourceError blockedError(const ResourceRequest&) const = 0;

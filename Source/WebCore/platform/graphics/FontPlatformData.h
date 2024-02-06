@@ -51,6 +51,13 @@
 #endif
 #endif
 
+#if PLATFORM(QT)
+#include <QRawFont>
+#include <wtf/GetPtr.h>
+#include <wtf/RefCounted.h>
+#include <wtf/RefPtr.h>
+#endif
+
 #if USE(APPKIT)
 OBJC_CLASS NSFont;
 #endif
@@ -133,6 +140,24 @@ struct FontPlatformDataAttributes {
 #endif
 };
 
+#if PLATFORM(QT)
+class FontPlatformData;
+
+class FontPlatformDataPrivate : public RefCounted<FontPlatformDataPrivate> {
+    WTF_MAKE_FAST_ALLOCATED;
+public:
+    WTF_MAKE_NONCOPYABLE(FontPlatformDataPrivate);
+
+    static void platformDataInit(FontPlatformData&, float size, const QRawFont& rawFont);
+    QRawFont rawFont;
+
+private:
+    FontPlatformDataPrivate(const QRawFont& rawFont)
+        : rawFont(rawFont)
+    { }
+};
+#endif
+
 // This class is conceptually immutable. Once created, no instances should ever change (in an observable way).
 class FontPlatformData {
     WTF_MAKE_FAST_ALLOCATED;
@@ -178,6 +203,13 @@ public:
 
 #if USE(FREETYPE)
     FontPlatformData(cairo_font_face_t*, RefPtr<FcPattern>&&, float size, bool fixedWidth, bool syntheticBold, bool syntheticOblique, FontOrientation, const FontCustomPlatformData* = nullptr);
+#endif
+
+#if PLATFORM(QT)
+    FontPlatformData(const FontDescription&, const AtomString& family, const FontCustomPlatformData* = nullptr);
+    FontPlatformData(const QRawFont& rawFont, const FontCustomPlatformData* = nullptr);
+
+    friend class FontPlatformDataPrivate;
 #endif
 
     using Attributes = FontPlatformDataAttributes;
@@ -238,6 +270,10 @@ public:
     bool hasCompatibleCharmap() const;
     FcPattern* fcPattern() const;
     bool isFixedWidth() const { return m_fixedWidth; }
+#endif
+
+#if PLATFORM(QT)
+    QRawFont rawFont() const;
 #endif
 
     unsigned hash() const;
@@ -303,6 +339,10 @@ private:
     void platformDataInit(HFONT, float size, WCHAR* faceName);
 #endif
 
+#if PLATFORM(QT)
+    void platformDataInit(float size, const QRawFont& rawFont);
+#endif
+
 #if USE(FREETYPE)
     void buildScaledFont(cairo_font_face_t*);
 #endif
@@ -323,6 +363,12 @@ private:
     RefPtr<FcPattern> m_pattern;
 #endif
 
+#if PLATFORM(QT)
+    RefPtr<FontPlatformDataPrivate> m_data;
+#endif
+
+    // The values below are common to all ports
+    // FIXME: If they're common to all ports, they should move to Font
     float m_size { 0 };
 
     FontOrientation m_orientation { FontOrientation::Horizontal };

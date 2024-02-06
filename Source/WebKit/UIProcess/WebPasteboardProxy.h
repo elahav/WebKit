@@ -76,7 +76,6 @@ public:
     void didDestroyFrame(WebFrameProxy*);
 #endif
 
-private:
     WebPasteboardProxy();
 
     void didReceiveMessage(IPC::Connection&, IPC::Decoder&) override;

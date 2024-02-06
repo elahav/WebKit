@@ -27,7 +27,7 @@
 #include "NicosiaAnimation.h"
 #include "TransformOperation.h"
 
-#if !USE(COORDINATED_GRAPHICS)
+#if !USE(COORDINATED_GRAPHICS) || PLATFORM(QT)
 
 namespace WebCore {
 
@@ -315,6 +315,7 @@ void GraphicsLayerTextureMapper::setContentsToImage(Image* image)
         // This code makes the assumption that pointer equality on a PlatformImagePtr is a valid way to tell if the image is changed.
         // This assumption is true for the GTK+ port.
         auto newNativeImage = image->nativeImageForCurrentFrame();
+
         if (!newNativeImage)
             return;
 
@@ -327,8 +328,11 @@ void GraphicsLayerTextureMapper::setContentsToImage(Image* image)
         m_compositedImage->setContentsToImage(image);
         m_compositedImage->updateContentsScale(pageScaleFactor() * deviceScaleFactor());
     } else {
+#if PLATFORM(QT)
         m_compositedNativeImage = nullptr;
+#else
         m_compositedImage = nullptr;
+#endif
     }
 
     setContentsToPlatformLayer(m_compositedImage.get(), ContentsLayerPurpose::Image);

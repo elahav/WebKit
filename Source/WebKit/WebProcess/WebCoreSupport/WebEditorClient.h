@@ -151,6 +151,8 @@ private:
     bool executePendingEditorCommands(WebCore::LocalFrame&, const Vector<WTF::String>&, bool);
     bool handleGtkEditorCommand(WebCore::LocalFrame&, const String& command, bool);
     void getEditorCommandsForKeyEvent(const WebCore::KeyboardEvent*, Vector<WTF::String>&);
+#endif
+#if PLATFORM(GTK) || PLATFORM(QT)
     void updateGlobalSelection(WebCore::LocalFrame*);
 #endif
 

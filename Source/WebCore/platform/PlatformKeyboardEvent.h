@@ -41,6 +41,12 @@ OBJC_CLASS NSEvent;
 OBJC_CLASS WebEvent;
 #endif
 
+#if PLATFORM(QT)
+QT_BEGIN_NAMESPACE
+class QKeyEvent;
+QT_END_NAMESPACE
+#endif
+
 namespace WebCore {
 
     class PlatformKeyboardEvent : public PlatformEvent {
@@ -48,6 +54,10 @@ namespace WebCore {
     public:
         PlatformKeyboardEvent()
             : PlatformEvent(PlatformEvent::Type::KeyDown)
+#if PLATFORM(QT)
+            , m_qtEvent(0)
+            , m_useNativeVirtualKeyAsDOMKey(false)
+#endif
         {
         }
 
@@ -137,6 +147,13 @@ namespace WebCore {
         static String singleCharacterString(unsigned);
 #endif
 
+#if PLATFORM(QT)
+        PlatformKeyboardEvent(QKeyEvent*, bool);
+        QKeyEvent* qtEvent() const { return m_qtEvent; }
+        uint32_t nativeModifiers() const;
+        uint32_t nativeScanCode() const;
+#endif
+
 #if USE(LIBWPE)
         static String keyValueForWPEKeyCode(unsigned);
         static String keyCodeForHardwareKeyCode(unsigned);
@@ -179,8 +196,21 @@ namespace WebCore {
         RetainPtr<::WebEvent> m_Event;
 #endif
 #endif
+
+#if PLATFORM(QT)
+        QKeyEvent* m_qtEvent;
+        bool m_useNativeVirtualKeyAsDOMKey;
+#endif
+        
         // The modifier state is optional, since it is not needed in the UI process or in legacy WebKit.
         static std::optional<OptionSet<Modifier>> s_currentModifiers;
     };
     
+#if PLATFORM(QT)
+// Used by WebKit2.
+String keyIdentifierForQtKeyCode(int keyCode);
+String keyCodeForQtKeyEvent(const QKeyEvent*);
+int windowsKeyCodeForKeyEvent(int keycode, bool isKeypad = false);
+#endif
+
 } // namespace WebCore

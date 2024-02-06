@@ -38,6 +38,8 @@
 #elif PLATFORM(GTK)
 #include <WebCore/GRefPtrGtk.h>
 #include <WebCore/GUniquePtrGtk.h>
+#elif PLATFORM(QT)
+#include <QTouchEvent>
 #elif USE(LIBWPE)
 #include <wpe/wpe.h>
 #endif
@@ -83,6 +85,8 @@ private:
     GRefPtr<GdkEvent> m_nativeEvent;
 #elif PLATFORM(GTK)
     GUniquePtr<GdkEvent> m_nativeEvent;
+#elif PLATFORM(QT)
+    const QTouchEvent m_nativeEvent;
 #elif USE(LIBWPE)
     struct wpe_input_touch_event_raw m_fallbackTouchPoint;
 #endif

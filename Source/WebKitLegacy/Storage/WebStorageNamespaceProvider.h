@@ -33,7 +33,7 @@ namespace WebCore {
 class SecurityOriginData;
 }
 
-namespace WebKit {
+namespace WebKitLegacy {
 
 class WebStorageNamespaceProvider final : public WebCore::StorageNamespaceProvider, public CanMakeWeakPtr<WebStorageNamespaceProvider> {
 public:
@@ -61,4 +61,4 @@ private:
     SingleThreadWeakHashMap<WebCore::Page, HashMap<WebCore::SecurityOriginData, RefPtr<WebCore::StorageNamespace>>> m_sessionStorageNamespaces;
 };
 
-} // namespace WebKit
+} // namespace WebKitLegacy

@@ -50,7 +50,7 @@ private:
     void suspendIfNeeded();
 #if USE(COCOA_EVENT_LOOP)
     using WorkQueue::dispatchQueue;
-#else
+#elif !PLATFORM(QT)
     using WorkQueue::runLoop;
 #endif
     enum class State : uint8_t { Running, WillSuspend, Suspended };

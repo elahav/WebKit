@@ -1946,7 +1946,10 @@ WebsiteDataStoreParameters WebsiteDataStore::parameters()
 
     parameters.networkSessionParameters = WTFMove(networkSessionParameters);
     parameters.networkSessionParameters.resourceLoadStatisticsParameters.enabled = m_trackingPreventionEnabled;
+#if !PLATFORM(QT)
     platformSetNetworkParameters(parameters);
+#endif
+    
 #if PLATFORM(COCOA)
     parameters.networkSessionParameters.appHasRequestedCrossWebsiteTrackingPermission = hasRequestedCrossWebsiteTrackingPermission();
     parameters.networkSessionParameters.useNetworkLoader = useNetworkLoader();

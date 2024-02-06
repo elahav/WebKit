@@ -27,7 +27,7 @@
 
 #include <wtf/Forward.h>
 
-#if PLATFORM(COCOA)
+#if PLATFORM(COCOA) || (PLATFORM(QT) && OS(DARWIN))
 
 #include <mach/mach_port.h>
 

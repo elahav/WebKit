@@ -142,17 +142,47 @@ _PATH_RULES_SPECIFIER = [
 
     ([  # TestNetscapePlugIn has no config.h and uses funny names like
       # NPP_SetWindow.
-      os.path.join('Tools', 'DumpRenderTree', 'TestNetscapePlugIn')],
+      os.path.join('Tools', 'DumpRenderTree', 'TestNetscapePlugIn'),
+      # Qt tests and examples follow Qt coding style
+      os.path.join('Source', 'WebKit', 'qt', 'docs'),
+      os.path.join('Source', 'WebKit', 'qt', 'examples'),
+      os.path.join('Source', 'WebKit', 'qt', 'tests')],
      ["-build/include",
-      "-readability/naming"]),
+      "-readability/naming",
+      "-readability/parameter_name",
+      "-whitespace/braces",
+      "-whitespace/comments"]),
     ([  # Ignore use of RetainPtr<NSObject *> for tests that ensure its compatibility with ReteainPtr<NSObject>.
       os.path.join('Tools', 'TestWebKitAPI', 'Tests', 'WTF', 'ns', 'RetainPtr.mm')],
      ["-runtime/retainptr"]),
     ([  # There is no clean way to avoid "yy_*" names used by flex.
       os.path.join('Source', 'WebCore', 'css', 'CSSParser.cpp'),
       # TestWebKitAPI uses funny macros like EXPECT_WK_STREQ.
-      os.path.join('Tools', 'TestWebKitAPI')],
+      os.path.join('Tools', 'TestWebKitAPI'),
+      # Qt code uses '_' in some places (such as private slots
+      # and on test xxx_data methos on tests)
+      "Source/JavaScriptCore/qt/",
+      "Source/WebKit/qt/tests/",
+      "Source/WebKit/qt/declarative/",
+      "Source/WebKit/qt/examples/"],
      ["-readability/naming"]),
+
+    ([# The Qt APIs use Qt declaration style, it puts the * to
+      # the variable name, not to the class, and variables should
+      # always be named in headers.
+      # Also header guards are named differently
+      "Source/WebKit/qt/Api/",
+      "Source/WebKit/qt/WidgetApi/",
+      "Source/WebKit2/UIProcess/API/qt"],
+     ["-build/header_guard",
+      "-readability/naming",
+      "-readability/parameter_name",
+      "-whitespace/declaration"]),
+
+     ([# Qt's MiniBrowser has no config.h
+       "Tools/MiniBrowser/qt",
+       "Tools/MiniBrowser/qt/raw"],
+      ["-build/include"]),
 
     ([
       # The WPEQtView class can't rely on the readability/parameter_name rule,

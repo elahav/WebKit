@@ -250,7 +250,7 @@ bool HTMLFormControlElement::isKeyboardFocusable(KeyboardEvent* event) const
 
 bool HTMLFormControlElement::isMouseFocusable() const
 {
-#if (PLATFORM(GTK) || PLATFORM(WPE))
+#if PLATFORM(GTK) || PLATFORM(WPE) || PLATFORM(QT)
     return HTMLElement::isMouseFocusable();
 #else
     if (!!tabIndexSetExplicitly() || needsMouseFocusableQuirk())

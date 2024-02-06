@@ -52,6 +52,10 @@
 #include <usp10.h>
 #endif
 
+#if PLATFORM(QT)
+#include <QRawFont>
+#endif
+
 namespace WTF {
 class TextStream;
 }
@@ -220,6 +224,10 @@ public:
     std::optional<BitVector> findOTSVGGlyphs(const GlyphBufferGlyph*, unsigned count) const;
 
     bool hasAnyComplexColorFormatGlyphs(const GlyphBufferGlyph*, unsigned count) const;
+
+#if PLATFORM(QT)
+    QRawFont getQtRawFont() const { return m_platformData.rawFont(); }
+#endif
 
 #if PLATFORM(WIN)
     SCRIPT_CACHE* scriptCache() const { return &m_scriptCache; }

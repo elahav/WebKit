@@ -1,0 +1,11 @@
+--- Source/WebKit/Platform/IPC/Connection.cpp
++++ Source/WebKit/Platform/IPC/Connection.cpp
+@@ -44,7 +44,7 @@
+ #include <wtf/text/WTFString.h>
+ #include <wtf/threads/BinarySemaphore.h>
+ 
+-#if PLATFORM(COCOA)
++#if USE(MACH_PORTS)
+ #include "ArgumentCodersDarwin.h"
+ #include "MachMessage.h"
+ #endif

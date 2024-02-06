@@ -741,6 +741,11 @@ macro(GENERATE_MESSAGE_SOURCES _output_source _inputs)
             ${WebKit_DERIVED_SOURCES_DIR}/${_name}MessageReceiver.cpp
             ${WebKit_DERIVED_SOURCES_DIR}/${_name}Messages.h
         )
+
+if (${PORT} STREQUAL "Qt")
+        set_property(SOURCE ${WebKit_DERIVED_SOURCES_DIR}/${_name}MessageReceiver.cpp PROPERTY SKIP_AUTOMOC ON)
+endif ()
+
         list(APPEND ${_output_source} ${WebKit_DERIVED_SOURCES_DIR}/${_name}MessageReceiver.cpp)
     endforeach ()
 
@@ -891,6 +896,8 @@ WEBKIT_COMPUTE_SOURCES(WebKit)
 WEBKIT_FRAMEWORK(WebKit)
 ADD_WEBKIT_PREFIX_HEADER(WebKit)
 
+QT_ADD_EXTRA_WEBKIT_TARGET_EXPORT(WebKit2)
+
 list(APPEND WebProcess_PRIVATE_INCLUDE_DIRECTORIES $<TARGET_PROPERTY:WebKit,INCLUDE_DIRECTORIES>)
 WEBKIT_EXECUTABLE(WebProcess)
 ADD_WEBKIT_PREFIX_HEADER(WebProcess)
@@ -934,7 +941,7 @@ else ()
 
     set_target_properties(WebKit PROPERTIES VERSION ${WEBKIT_VERSION} SOVERSION ${WEBKIT_VERSION_MAJOR})
 
-    install(TARGETS WebKit WebProcess NetworkProcess
+    install(TARGETS WebProcess NetworkProcess
         LIBRARY DESTINATION "${LIB_INSTALL_DIR}"
         RUNTIME DESTINATION "${LIBEXEC_INSTALL_DIR}"
     )

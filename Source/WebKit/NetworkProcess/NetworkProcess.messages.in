@@ -51,6 +51,9 @@ messages -> NetworkProcess LegacyReceiver {
     DownloadRequest(PAL::SessionID sessionID, WebKit::DownloadID downloadID, WebCore::ResourceRequest request, std::optional<WebCore::SecurityOriginData> topOrigin, std::optional<WebKit::NavigatingToAppBoundDomain> isNavigatingToAppBoundDomain, String suggestedFilename)
     ResumeDownload(PAL::SessionID sessionID, WebKit::DownloadID downloadID, IPC::DataReference resumeData, String path, WebKit::SandboxExtension::Handle sandboxExtensionHandle, enum:bool WebKit::CallDownloadDidStart callDownloadDidStart)
     CancelDownload(WebKit::DownloadID downloadID) -> (IPC::DataReference resumeData)
+#if PLATFORM(QT)
+    StartTransfer(WebKit::DownloadID downloadID, String destination)
+#endif
 #if PLATFORM(COCOA)
     PublishDownloadProgress(WebKit::DownloadID downloadID, URL url, WebKit::SandboxExtension::Handle sandboxExtensionHandle)
 #endif

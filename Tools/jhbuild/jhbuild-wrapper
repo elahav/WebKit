@@ -29,6 +29,8 @@ jhbuild_revision = '048920f64d82779eef88158455bfd1d160a3be1a'
 def determine_platform():
     if '--gtk' in sys.argv:
         return "gtk";
+    if '--qt' in sys.argv:
+        return "qt";
     if '--wpe' in sys.argv:
         return "wpe"
     raise ValueError('No platform specified for jhbuild-wrapper.')

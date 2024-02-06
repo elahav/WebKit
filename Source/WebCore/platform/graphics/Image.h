@@ -158,6 +158,10 @@ public:
 #if ASSERT_ENABLED
     virtual bool notSolidColor() { return true; }
 #endif
+    
+#if PLATFORM(QT)
+    static void setPlatformResource(const char* name, const QImage&);
+#endif
 
     virtual void dump(WTF::TextStream&) const;
 

@@ -32,6 +32,11 @@
 #include <wtf/RetainPtr.h>
 #include <wtf/Vector.h>
 
+#if PLATFORM(QT)
+#include <QEvent>
+#include <QTouchEvent>
+#endif
+
 #if PLATFORM(COCOA)
 OBJC_CLASS NSEvent;
 #endif
@@ -124,12 +129,23 @@ private:
     double currentEventTime() { return m_time; }
     void updateClickCountForButton(int button);
 
+#if PLATFORM(QT)
+    void replaySavedEvents();
+#endif
+    
     void sendMouseDownToStartPressureEvents();
 #if PLATFORM(COCOA)
     enum class PressureChangeDirection { Increasing, Decreasing };
     RetainPtr<NSEvent> beginPressureEvent(int stage);
     RetainPtr<NSEvent> pressureChangeEvent(int stage, PressureChangeDirection);
     RetainPtr<NSEvent> pressureChangeEvent(int stage, float pressure, PressureChangeDirection);
+#endif
+
+#if PLATFORM(QT)
+#if ENABLE(TOUCH_EVENTS)
+    void sendTouchEvent(QEvent::Type);
+#endif
+    void sendOrQueueEvent(QEvent*);
 #endif
 
 #if PLATFORM(WIN)
@@ -150,6 +166,16 @@ private:
 #endif
 #if PLATFORM(GTK)
     bool m_hasPreciseDeltas { false };
+#endif
+#if PLATFORM(QT)
+    Qt::MouseButtons m_mouseButtons;
+    
+#if ENABLE(TOUCH_EVENTS)
+    QList<QTouchEvent::TouchPoint> m_touchPoints;
+    Qt::KeyboardModifiers m_touchModifiers;
+    QPoint m_touchPointRadius;
+    bool m_touchActive;
+#endif
 #endif
 #if USE(LIBWPE)
     std::unique_ptr<EventSenderProxyClient> m_client;

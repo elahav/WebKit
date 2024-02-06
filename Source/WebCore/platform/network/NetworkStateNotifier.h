@@ -39,9 +39,15 @@ typedef const struct __SCDynamicStore * SCDynamicStoreRef;
 
 #if PLATFORM(WIN)
 #include <windows.h>
+#elif PLATFORM(QT)
+#include <QtCore/qglobal.h>
 #endif
 
 namespace WebCore {
+
+#if (PLATFORM(QT) && !defined(QT_NO_BEARERMANAGEMENT))
+class NetworkStateNotifierPrivate;
+#endif
 
 class NetworkStateNotifier {
     WTF_MAKE_NONCOPYABLE(NetworkStateNotifier);
@@ -51,6 +57,10 @@ public:
 
     WEBCORE_EXPORT bool onLine();
     WEBCORE_EXPORT void addListener(Function<void(bool isOnLine)>&&);
+
+#if PLATFORM(QT) && !defined(QT_NO_BEARERMANAGEMENT)
+    void setNetworkAccessAllowed(bool);
+#endif
 
 private:
     friend NeverDestroyed<NetworkStateNotifier>;
@@ -86,6 +96,11 @@ private:
 #if PLATFORM(WIN)
     HANDLE m_waitHandle;
     OVERLAPPED m_overlapped;
+#endif
+
+#if (PLATFORM(QT) && !defined(QT_NO_BEARERMANAGEMENT))
+    friend class NetworkStateNotifierPrivate;
+    std::unique_ptr<NetworkStateNotifierPrivate> p;
 #endif
 };
 

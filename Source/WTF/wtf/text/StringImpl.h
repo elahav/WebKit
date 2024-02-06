@@ -42,6 +42,10 @@
 #include <wtf/text/UTF8ConversionError.h>
 #include <wtf/unicode/UTF8Conversion.h>
 
+#if PLATFORM(QT)
+#include <QString>
+#endif
+
 #if USE(CF)
 typedef const struct __CFString * CFStringRef;
 #endif

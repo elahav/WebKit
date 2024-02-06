@@ -113,7 +113,7 @@ private:
 #if ENABLE(IOS_TOUCH_EVENTS)
     void touchEvent(WebCore::PageIdentifier, WebCore::FrameIdentifier, const WebTouchEvent&, CompletionHandler<void(bool, std::optional<WebCore::RemoteUserInputEventData>)>&&);
 #endif
-#if ENABLE(MAC_GESTURE_EVENTS)
+#if ENABLE(MAC_GESTURE_EVENTS) || ENABLE(QT_GESTURE_EVENTS)
     void gestureEvent(WebCore::PageIdentifier, const WebGestureEvent&, CompletionHandler<void(std::optional<WebEventType>, bool)>&&);
 #endif
 
@@ -126,7 +126,7 @@ private:
 #if ENABLE(IOS_TOUCH_EVENTS)
     void dispatchTouchEvents();
 #endif
-#if ENABLE(MAC_GESTURE_EVENTS)
+#if ENABLE(MAC_GESTURE_EVENTS) || ENABLE(QT_GESTURE_EVENTS)
     void dispatchGestureEvent(WebCore::PageIdentifier, const WebGestureEvent&, CompletionHandler<void(std::optional<WebEventType>, bool)>&&);
 #endif
 

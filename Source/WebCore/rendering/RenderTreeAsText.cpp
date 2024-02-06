@@ -83,6 +83,10 @@
 #include <wtf/text/TextStream.h>
 #include <wtf/unicode/CharacterNames.h>
 
+#if PLATFORM(QT)
+#include <QVariant>
+#endif
+
 #if PLATFORM(MAC)
 #include "ScrollbarThemeMac.h"
 #endif
@@ -476,6 +480,23 @@ void RenderTreeAsText::writeRenderObject(TextStream& ts, const RenderObject& o, 
             ts << ": " << text;
         }
     }
+
+#if PLATFORM(QT)
+    // Print attributes of embedded QWidgets. E.g. when the WebCore::Widget
+    // is invisible the QWidget should be invisible too.
+    if (is<RenderWidget>(o)) {
+        const RenderWidget& part = downcast<RenderWidget>(o);
+        if (part.widget() && part.widget()->platformWidget()) {
+            QObject* wid = part.widget()->platformWidget();
+
+            ts << " [QT: ";
+            ts << "geometry: {" << wid->property("geometry").toRect() << "} ";
+            ts << "isHidden: " << !wid->property("isVisible").toBool() << " ";
+            ts << "isSelfVisible: " << part.widget()->isSelfVisible() << " ";
+            ts << "isParentVisible: " << part.widget()->isParentVisible() << " ] ";
+        }
+    }
+#endif
     
     writeDebugInfo(ts, o, behavior);
 }

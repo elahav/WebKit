@@ -121,7 +121,7 @@ class UnlinkedFunctionCodeBlock;
         {
             return adoptRef(*new StringSourceProvider(source, sourceOrigin, taintedness, WTFMove(sourceURL), startPosition, sourceType));
         }
-        
+
         unsigned hash() const override
         {
             return m_source.get().hash();

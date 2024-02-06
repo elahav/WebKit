@@ -68,6 +68,11 @@ struct NetworkProcessCreationParameters {
     std::optional<MemoryPressureHandler::Configuration> memoryPressureHandlerConfiguration;
 #endif
 
+#if PLATFORM(QT)
+    String cookiePersistentStoragePath;
+    String diskCacheDirectory;
+#endif
+
     Vector<String> urlSchemesRegisteredAsSecure;
     Vector<String> urlSchemesRegisteredAsBypassingContentSecurityPolicy;
     Vector<String> urlSchemesRegisteredAsLocal;

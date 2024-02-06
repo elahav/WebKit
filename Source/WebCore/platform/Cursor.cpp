@@ -153,6 +153,9 @@ Cursor::Cursor(Image* image, const IntPoint& hotSpot)
     : m_type(Type::Custom)
     , m_image(image)
     , m_hotSpot(determineHotSpot(image, hotSpot))
+#if !PLATFORM(QT)
+    , m_platformCursor(nullptr)
+#endif
 {
 }
 
@@ -162,16 +165,28 @@ Cursor::Cursor(Image* image, const IntPoint& hotSpot, float scale)
     , m_image(image)
     , m_hotSpot(determineHotSpot(image, hotSpot))
     , m_imageScaleFactor(scale)
+#if !PLATFORM(QT)
+    , m_platformCursor(0)
+#endif
 {
 }
 #endif
 
 Cursor::Cursor(Type type)
     : m_type(type)
+#if !PLATFORM(QT)
+    , m_platformCursor(nullptr)
+#endif
 {
 }
 
-#if !HAVE(NSCURSOR)
+#if PLATFORM(QT)
+PlatformCursor Cursor::platformCursor() const
+{
+    ensurePlatformCursor();
+    return m_platformCursor ? &m_platformCursor.value() : nullptr;
+}
+#elif !HAVE(NSCURSOR)
 
 PlatformCursor Cursor::platformCursor() const
 {
@@ -439,7 +454,7 @@ const Cursor& grabbingCursor()
     return c;
 }
 
-#if !HAVE(NSCURSOR) && !PLATFORM(GTK) && !PLATFORM(WIN)
+#if !HAVE(NSCURSOR) && !PLATFORM(GTK) && !PLATFORM(WIN) && !PLATFORM(QT)
 void Cursor::ensurePlatformCursor() const
 {
     notImplemented();

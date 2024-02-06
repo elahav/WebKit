@@ -35,6 +35,13 @@
 #include <wtf/text/win/WCharStringExtras.h>
 #endif
 
+#if PLATFORM(QT)
+QT_BEGIN_NAMESPACE
+class QString;
+class QStringView;
+QT_END_NAMESPACE
+#endif
+
 namespace WTF {
 
 // Declarations of string operations
@@ -250,6 +257,19 @@ public:
     // Given Cocoa idioms, this is a more useful default. Clients that need to preserve the
     // null string can check isNull explicitly.
     operator NSString *() const;
+#endif
+
+#if PLATFORM(QT)
+    WTF_EXPORT_PRIVATE String(const QString&);
+    WTF_EXPORT_PRIVATE String(QLatin1StringView);
+    WTF_EXPORT_PRIVATE String(QStringView);
+    WTF_EXPORT_PRIVATE String(QByteArrayView);
+    WTF_EXPORT_PRIVATE operator QString() const;
+
+    // String(QStringView) makes for an ambiguous constructor, so we need to make these explicit
+    ALWAYS_INLINE String(Vector<UChar, 64> characters) : String(characters.data(), characters.size()) {}
+    ALWAYS_INLINE String(Vector<UChar, 32> characters) : String(characters.data(), characters.size()) {}
+    ALWAYS_INLINE String(Vector<UChar> characters) : String(characters.data(), characters.size()) {}
 #endif
 
 #if OS(WINDOWS)

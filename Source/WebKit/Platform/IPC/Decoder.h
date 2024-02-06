@@ -99,7 +99,7 @@ public:
     bool shouldMaintainOrderingWithAsyncMessages() const;
     void setIsAllowedWhenWaitingForSyncReplyOverride(bool value) { m_isAllowedWhenWaitingForSyncReplyOverride = value; }
 
-#if PLATFORM(MAC)
+#if PLATFORM(MAC) || (PLATFORM(QT) && USE(MACH_PORTS))
     void setImportanceAssertion(ImportanceAssertion&&);
 #endif
 
@@ -204,7 +204,7 @@ private:
     bool m_isAllowedWhenWaitingForSyncReplyOverride { false };
     MessageName m_messageName { MessageName::Invalid };
 
-#if PLATFORM(MAC)
+#if PLATFORM(MAC) || (PLATFORM(QT) && USE(MACH_PORTS))
     ImportanceAssertion m_importanceAssertion;
 #endif
 #if PLATFORM(COCOA)

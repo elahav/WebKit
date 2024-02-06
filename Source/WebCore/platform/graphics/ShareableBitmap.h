@@ -36,6 +36,10 @@
 #include <wtf/RefPtr.h>
 #include <wtf/ThreadSafeRefCounted.h>
 
+#if PLATFORM(QT)
+#include <QImage>
+#endif
+
 namespace WebCore {
 
 class GraphicsContext;

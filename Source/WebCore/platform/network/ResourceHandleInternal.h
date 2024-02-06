@@ -33,6 +33,15 @@
 #include "Timer.h"
 #include <wtf/MonotonicTime.h>
 
+#if PLATFORM(QT)
+QT_BEGIN_NAMESPACE
+class QWebNetworkJob;
+QT_END_NAMESPACE
+namespace WebCore {
+    class QNetworkReplyHandler;
+}
+#endif
+
 #if PLATFORM(COCOA)
 OBJC_CLASS NSURLAuthenticationChallenge;
 OBJC_CLASS NSURLConnection;
@@ -98,6 +107,10 @@ public:
 #endif
     Box<NetworkLoadMetrics> m_networkLoadMetrics;
     MonotonicTime m_startTime;
+    
+#if PLATFORM(QT)
+    QNetworkReplyHandler* m_job { nullptr };
+#endif
 
     AuthenticationChallenge m_currentWebChallenge;
     Timer m_failureTimer;

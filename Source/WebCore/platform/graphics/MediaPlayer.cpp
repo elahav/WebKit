@@ -64,6 +64,10 @@
 #include "MediaStreamPrivate.h"
 #endif
 
+#if PLATFORM(QT)
+#include <QtGlobal>
+#endif
+
 #if USE(GSTREAMER)
 #include "MediaPlayerPrivateGStreamer.h"
 #if ENABLE(MEDIA_SOURCE)
@@ -94,6 +98,11 @@
 #endif
 
 #endif // PLATFORM(COCOA)
+
+#if PLATFORM(QT) && USE(QT_MULTIMEDIA) && !USE(GSTREAMER)
+#include "MediaPlayerPrivateQt.h"
+#define PlatformMediaEngineClassName MediaPlayerPrivateQt
+#endif
 
 #if USE(EXTERNAL_HOLEPUNCH)
 #include "MediaPlayerPrivateHolePunch.h"
@@ -1812,7 +1821,14 @@ AVPlayer* MediaPlayer::objCAVFoundationAVPlayer() const
 
 #endif
 
-bool MediaPlayer::performTaskAtMediaTime(Function<void()>&& task, const MediaTime& time)
+#if USE(QT_MULTIMEDIA)
+MediaPlayerPrivateQt* MediaPlayer::qtMediaPlayer() const
+{
+    return static_cast<MediaPlayerPrivateQt*>(m_private.get());
+}
+#endif
+
+bool MediaPlayer::performTaskAtMediaTime(Function<void()>&& task, const MediaTime &time)
 {
     return m_private->performTaskAtMediaTime(WTFMove(task), time);
 }

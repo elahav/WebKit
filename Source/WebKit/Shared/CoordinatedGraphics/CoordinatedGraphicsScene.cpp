@@ -47,8 +47,10 @@ CoordinatedGraphicsScene::~CoordinatedGraphicsScene() = default;
 
 void CoordinatedGraphicsScene::applyStateChanges(const Vector<RefPtr<Nicosia::Scene>>& states)
 {
-    if (!m_textureMapper)
-        m_textureMapper = TextureMapper::create();
+    if (!m_textureMapper) {
+        m_textureMapper = TextureMapper::create(TextureMapper::OpenGLMode);
+        static_cast<TextureMapperGL*>(m_textureMapper.get())->setEnableEdgeDistanceAntialiasing(true);
+    }
 
     ensureRootLayer();
 
@@ -79,6 +81,13 @@ void CoordinatedGraphicsScene::paintToCurrentGLContext(const TransformationMatri
     if (sceneHasRunningAnimations)
         updateViewport();
 }
+
+#if PLATFORM(QT)
+void CoordinatedGraphicsScene::setScrollPosition(const FloatPoint& scrollPosition)
+{
+    m_scrollPosition = scrollPosition;
+}
+#endif
 
 void CoordinatedGraphicsScene::updateViewport()
 {

@@ -52,6 +52,7 @@
 
 namespace WebCore {
 
+#if !PLATFORM(QT)
 Ref<GraphicsLayer> GraphicsLayer::create(GraphicsLayerFactory* factory, GraphicsLayerClient& client, Type layerType)
 {
     if (!factory)
@@ -59,6 +60,7 @@ Ref<GraphicsLayer> GraphicsLayer::create(GraphicsLayerFactory* factory, Graphics
 
     return factory->createGraphicsLayer(layerType, client);
 }
+#endif
 
 void CoordinatedGraphicsLayer::notifyFlushRequired()
 {
@@ -491,7 +493,7 @@ void CoordinatedGraphicsLayer::setContentsRectClipsDescendants(bool clips)
 
 bool GraphicsLayer::supportsContentsTiling()
 {
-    return true;
+    return s_shouldSupportContentsTiling;
 }
 
 void CoordinatedGraphicsLayer::setContentsNeedsDisplay()

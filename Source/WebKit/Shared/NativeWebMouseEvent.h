@@ -43,6 +43,10 @@ typedef union _GdkEvent GdkEvent;
 #endif
 #endif
 
+#if PLATFORM(QT)
+#include <qevent.h>
+#endif
+
 #if PLATFORM(WPE) && ENABLE(WPE_PLATFORM)
 typedef struct _WPEEvent WPEEvent;
 #endif
@@ -67,6 +71,8 @@ class NativeWebMouseEvent : public WebMouseEvent {
 public:
 #if USE(APPKIT)
     NativeWebMouseEvent(NSEvent *, NSEvent *lastPressureEvent, NSView *);
+#elif PLATFORM(QT)
+    NativeWebMouseEvent(QMouseEvent*, const QTransform& fromItemTransform, int eventClickCount);
 #elif PLATFORM(GTK)
     NativeWebMouseEvent(const NativeWebMouseEvent&);
     NativeWebMouseEvent(GdkEvent*, int, std::optional<WebCore::FloatSize>);
@@ -88,6 +94,8 @@ public:
 
 #if USE(APPKIT)
     NSEvent* nativeEvent() const { return m_nativeEvent.get(); }
+#elif PLATFORM(QT)
+    const QMouseEvent* nativeEvent() const { return m_nativeEvent; }
 #elif PLATFORM(GTK)
     const GdkEvent* nativeEvent() const { return m_nativeEvent.get(); }
 #elif PLATFORM(IOS_FAMILY)
@@ -101,6 +109,8 @@ public:
 private:
 #if USE(APPKIT)
     RetainPtr<NSEvent> m_nativeEvent;
+#elif PLATFORM(QT)
+    QMouseEvent* m_nativeEvent;
 #elif PLATFORM(GTK) && USE(GTK4)
     GRefPtr<GdkEvent> m_nativeEvent;
 #elif PLATFORM(GTK)

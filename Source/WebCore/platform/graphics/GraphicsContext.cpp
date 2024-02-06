@@ -135,6 +135,24 @@ void GraphicsContext::drawRaisedEllipse(const FloatRect& rect, const Color& elli
 
     restore();
 }
+    
+#if PLATFORM(QT)
+    bool GraphicsContext::mustUseShadowBlur() const
+    {
+        // We can't avoid ShadowBlur if the shadow has blur.
+        if (hasBlurredDropShadow())
+            return true;
+        // We can avoid ShadowBlur and optimize, since we're not drawing on a
+        // canvas and box shadows are affected by the transformation matrix.
+        if (!shadowsIgnoreTransforms())
+            return false;
+        // We can avoid ShadowBlur, since there are no transformations to apply to the canvas.
+        if (getCTM().isIdentity())
+            return false;
+        // Otherwise, no chance avoiding ShadowBlur.
+        return true;
+    }
+#endif
 
 void GraphicsContext::beginTransparencyLayer(float)
 {

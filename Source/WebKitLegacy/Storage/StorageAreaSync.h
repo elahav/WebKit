@@ -36,7 +36,7 @@ namespace WebCore {
 class StorageSyncManager;
 }
 
-namespace WebKit {
+namespace WebKitLegacy {
 
 class StorageAreaImpl;
 

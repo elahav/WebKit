@@ -48,6 +48,10 @@
 OBJC_CLASS _SEExtensionProcess;
 #endif
 
+#if PLATFORM(QT)
+#include <QProcess>
+#endif
+
 namespace WebKit {
 
 #if PLATFORM(GTK) || PLATFORM(WPE)
@@ -153,6 +157,10 @@ private:
 
 #if PLATFORM(WIN)
     WTF::Win32Handle m_hProcess;
+#endif
+
+#if PLATFORM(QT)
+    QProcess* m_processObject;
 #endif
 
     const LaunchOptions m_launchOptions;

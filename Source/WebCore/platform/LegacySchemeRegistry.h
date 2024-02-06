@@ -30,6 +30,12 @@
 #include <wtf/text/StringHash.h>
 #include <wtf/text/WTFString.h>
 
+#if PLATFORM(QT)
+QT_BEGIN_NAMESPACE
+using QStringList = class QList<QString>;
+QT_END_NAMESPACE
+#endif
+
 namespace WebCore {
 
 // FIXME: Make HashSet<String>::contains(StringView) work and use StringViews here.
@@ -39,6 +45,9 @@ class LegacySchemeRegistry {
 public:
     WEBCORE_EXPORT static void registerURLSchemeAsLocal(const String&); // Thread safe.
     static void removeURLSchemeRegisteredAsLocal(const String&); // Thread safe.
+#if PLATFORM(QT)
+    static QStringList localSchemes();
+#endif
 
     WEBCORE_EXPORT static bool shouldTreatURLSchemeAsLocal(StringView); // Thread safe.
     WEBCORE_EXPORT static bool isBuiltinScheme(const String&);

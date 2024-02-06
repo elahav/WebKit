@@ -135,6 +135,11 @@ struct SeekTarget {
 
     WEBCORE_EXPORT String toString() const;
 };
+    
+#if PLATFORM(QT)
+    class Document;
+    class MediaPlayerPrivateQt;
+#endif
 
 enum class MediaPlatformType {
     Mock,
@@ -148,6 +153,11 @@ using TrackID = uint64_t;
 class MediaPlayerClient : public CanMakeWeakPtr<MediaPlayerClient> {
 public:
     virtual ~MediaPlayerClient() = default;
+
+#if PLATFORM(QT)
+    // Get the document which the media player is owned by
+    virtual Document* mediaPlayerOwningDocument() { return 0; }
+#endif
 
     // the network state has changed
     virtual void mediaPlayerNetworkStateChanged() { }
@@ -676,6 +686,10 @@ public:
 
 #if USE(AVFOUNDATION)
     AVPlayer *objCAVFoundationAVPlayer() const;
+#endif
+    
+#if USE(QT_MULTIMEDIA)
+    MediaPlayerPrivateQt* qtMediaPlayer() const;
 #endif
 
     bool performTaskAtMediaTime(Function<void()>&&, const MediaTime&);

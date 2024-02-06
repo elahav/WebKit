@@ -41,6 +41,8 @@ using CocoaImage = UIImage;
 
 #elif PLATFORM(WIN)
 typedef struct HICON__* HICON;
+#elif PLATFORM(QT)
+#include <QIcon>
 #endif
 
 namespace WebCore {
@@ -80,6 +82,9 @@ private:
 #elif PLATFORM(WIN)
     Icon(HICON);
     HICON m_hIcon;
+#elif PLATFORM(QT)
+    Icon();
+    QIcon m_icon;
 #endif
 };
 

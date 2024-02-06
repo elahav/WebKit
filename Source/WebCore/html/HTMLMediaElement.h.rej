@@ -1,0 +1,13 @@
+--- Source/WebCore/html/HTMLMediaElement.h
++++ Source/WebCore/html/HTMLMediaElement.h
+@@ -745,6 +745,10 @@ private:
+     void scheduleMediaEngineWasUpdated();
+     void mediaEngineWasUpdated();
+ 
++#if PLATFORM(QT)
++    Document* mediaPlayerOwningDocument() override;
++#endif
++    
+     void mediaPlayerCharacteristicChanged() final;
+ 
+ #if ENABLE(LEGACY_ENCRYPTED_MEDIA)

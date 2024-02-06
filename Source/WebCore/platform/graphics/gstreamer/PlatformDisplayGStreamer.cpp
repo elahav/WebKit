@@ -82,4 +82,4 @@ void PlatformDisplay::clearGStreamerGLState()
 
 } // namespace WebCore
 
-#endif
+#endif // USE(GSTREAMER_GL)

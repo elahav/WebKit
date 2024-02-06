@@ -1,0 +1,13 @@
+--- Source/WebKit/WebProcess/WebPage/WebPage.h
++++ Source/WebKit/WebProcess/WebPage/WebPage.h
+@@ -420,6 +425,10 @@ class PlatformXRSystemProxy;
+ using SnapshotOptions = uint32_t;
+ using WKEventModifiers = uint32_t;
+ 
++#if ENABLE(QT_GESTURE_EVENTS)
++    class WebGestureEvent;
++#endif
++    
+ class WebPage : public API::ObjectImpl<API::Object::Type::BundlePage>, public IPC::MessageReceiver, public IPC::MessageSender, public CanMakeCheckedPtr {
+ public:
+     static Ref<WebPage> create(WebCore::PageIdentifier, WebPageCreationParameters&&);

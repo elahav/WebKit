@@ -281,7 +281,7 @@ void DocumentLoader::setMainDocumentError(const ResourceError& error)
 
 void DocumentLoader::mainReceivedError(const ResourceError& error)
 {
-    ASSERT(!error.isNull());
+    //ASSERT(!error.isNull());
 
     if (!frameLoader())
         return;

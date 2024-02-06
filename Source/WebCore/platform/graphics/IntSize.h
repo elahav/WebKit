@@ -52,6 +52,13 @@ typedef struct _NSSize NSSize;
 typedef struct tagSIZE SIZE;
 #endif
 
+#if PLATFORM(QT)
+#include <qglobal.h>
+QT_BEGIN_NAMESPACE
+class QSize;
+QT_END_NAMESPACE
+#endif
+
 namespace WTF {
 class TextStream;
 }
@@ -167,6 +174,11 @@ public:
 #if PLATFORM(WIN)
     WEBCORE_EXPORT IntSize(const SIZE&);
     WEBCORE_EXPORT operator SIZE() const;
+#endif
+
+#if PLATFORM(QT)
+    IntSize(const QSize&);
+    operator QSize() const;
 #endif
 
     String toJSONString() const;

@@ -52,7 +52,11 @@ PlatformImageNativeImageBackend::PlatformImageNativeImageBackend(PlatformImagePt
 #if !USE(CG)
 RefPtr<NativeImage> NativeImage::create(PlatformImagePtr&& platformImage, RenderingResourceIdentifier identifier)
 {
+#if PLATFORM(QT)
+    if (platformImage.isNull())
+#else
     if (!platformImage)
+#endif
         return nullptr;
     UniqueRef<PlatformImageNativeImageBackend> backend { *new PlatformImageNativeImageBackend(WTFMove(platformImage)) };
     return adoptRef(*new NativeImage(WTFMove(backend), identifier));

@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2006 Nikolas Zimmermann <zimmermann@kde.org>
+ * Copyright (C) 2007-2022 Apple Inc. All rights reserved.
  * Copyright (C) 2007-2023 Apple Inc. All rights reserved.
  * Copyright (C) 2010 Torch Mobile (Beijing) Co. Ltd. All rights reserved.
  *
@@ -37,6 +38,12 @@
 #include <wtf/OptionSet.h>
 #include <wtf/RefCounted.h>
 #include <wtf/ThreadSafeWeakPtr.h>
+
+#if PLATFORM(QT)
+QT_BEGIN_NAMESPACE
+class QOpenGLContext;
+QT_END_NAMESPACE
+#endif
 
 namespace WTF {
 class TextStream;
@@ -127,6 +134,10 @@ public:
     static FloatRect clampedRect(const FloatRect&);
 
     WEBCORE_EXPORT RefPtr<ImageBuffer> clone() const;
+    
+#if PLATFORM(QT) && ENABLE(ACCELERATED_2D_CANVAS)
+    RefPtr<ImageBuffer> createCompatibleBuffer(const IntSize&, ColorSpace, QOpenGLContext*);
+#endif
 
     WEBCORE_EXPORT virtual GraphicsContext& context() const;
 

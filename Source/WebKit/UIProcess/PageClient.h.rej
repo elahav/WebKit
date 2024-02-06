@@ -1,0 +1,11 @@
+--- Source/WebKit/UIProcess/PageClient.h
++++ Source/WebKit/UIProcess/PageClient.h
+@@ -298,7 +306,7 @@ public:
+     virtual void clearSafeBrowsingWarningIfForMainFrameNavigation() { }
+     
+ #if ENABLE(DRAG_SUPPORT)
+-#if PLATFORM(GTK)
++#if PLATFORM(GTK) || PLATFORM(QT)
+     virtual void startDrag(WebCore::SelectionData&&, OptionSet<WebCore::DragOperation>, RefPtr<ShareableBitmap>&& dragImage, WebCore::IntPoint&& dragImageHotspot) = 0;
+ #else
+     virtual void startDrag(const WebCore::DragItem&, ShareableBitmap::Handle&&) { }

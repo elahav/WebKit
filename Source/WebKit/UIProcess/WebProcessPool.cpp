@@ -144,6 +144,10 @@
 #include <wtf/RefCountedLeakCounter.h>
 #endif
 
+#if PLATFORM(QT)
+#include <QProcess>
+#endif
+
 #if ENABLE(IPC_TESTING_API)
 #include "IPCTesterMessages.h"
 #endif
@@ -159,6 +163,19 @@
 
 namespace WebKit {
 using namespace WebCore;
+
+#if PLATFORM(QT)
+static int qProcessId(QProcess* process)
+{
+#if QT_VERSION >= QT_VERSION_CHECK(5, 3, 0)
+    return static_cast<int>(process->processId());
+#elif OS(WINDOWS)
+    return static_cast<int>(process->pid()->dwProcessId);
+#else
+    return static_cast<int>(process->pid());
+#endif
+}
+#endif
 
 DEFINE_DEBUG_ONLY_GLOBAL(WTF::RefCountedLeakCounter, processPoolCounter, ("WebProcessPool"));
 
@@ -1279,6 +1296,12 @@ Ref<DownloadProxy> WebProcessPool::download(WebsiteDataStore& dataStore, WebPage
 {
     Ref downloadProxy = createDownloadProxy(dataStore, request, initiatingPage, { });
     dataStore.download(downloadProxy, suggestedFilename);
+    
+#if PLATFORM(QT)
+    ASSERT(initiatingPage); // Our design does not suppport downloads without a WebPage.
+    initiatingPage->handleDownloadRequest(downloadProxy);
+#endif
+    
     return downloadProxy;
 }
 

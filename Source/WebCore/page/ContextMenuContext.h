@@ -58,6 +58,7 @@ public:
 
     Type type() const { return m_type; }
 
+    void setHitTestResult(const HitTestResult& result) { m_hitTestResult = result; }
     const HitTestResult& hitTestResult() const { return m_hitTestResult; }
     Event* event() const { return m_event.get(); }
 

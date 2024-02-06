@@ -80,6 +80,13 @@ messages -> WebPageProxy {
     SampledPageTopColorChanged(WebCore::Color sampledPageTopColor)
     SetCanShortCircuitHorizontalWheelEvents(bool canShortCircuitHorizontalWheelEvents)
 
+#if 0
+    //WIP
+    AuthenticationRequiredRequest(String hostname, String realm, String prefilledUsername) -> (String username, String password) Synchronous
+    CertificateVerificationRequest(String hostname) -> (bool ignoreErrors) Synchronous
+    ProxyAuthenticationRequiredRequest(String hostname, uint16_t port, String prefilledUsername) -> (String username, String password) Synchronous
+#endif
+
     DidChangeContentSize(WebCore::IntSize newSize)
     DidChangeIntrinsicContentSize(WebCore::IntSize newIntrinsicContentSize)
 
@@ -242,6 +249,10 @@ messages -> WebPageProxy {
 #endif
 
     RequestDOMPasteAccess(enum:uint8_t WebCore::DOMPasteAccessCategory pasteAccessCategory, WebCore::IntRect elementRect, String originIdentifier) -> (enum:uint8_t WebCore::DOMPasteAccessResponse response) Synchronous
+
+#if PLATFORM(QT)
+    WillSetInputMethodState()
+#endif
 
     # Find messages
     SetTextIndicatorFromFrame(WebCore::FrameIdentifier frameID, struct WebCore::TextIndicatorData indicator, uint64_t lifetime)

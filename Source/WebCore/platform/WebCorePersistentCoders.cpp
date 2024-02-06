@@ -599,6 +599,17 @@ std::optional<WebCore::CertificateInfo> Coder<WebCore::CertificateInfo>::decodeF
     return WebCore::CertificateInfo();
 }
 
+#elif PLATFORM(QT)
+
+void Coder<WebCore::CertificateInfo>::encodeForPersistence(Encoder&, const WebCore::CertificateInfo&)
+{
+}
+
+std::optional<WebCore::CertificateInfo> Coder<WebCore::CertificateInfo>::decodeForPersistence(Decoder&)
+{
+    return WebCore::CertificateInfo();
+}
+
 #endif
 
 // FIXME: Move persistent coder implementations here and generate IPC coders for these structures.

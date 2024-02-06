@@ -538,6 +538,9 @@ GlyphData FontCascadeFonts::glyphDataForCharacter(char32_t c, const FontCascadeD
     ASSERT(m_thread ? m_thread->ptr() == &Thread::current() : isMainThread());
     ASSERT(variant != AutoVariant);
 
+    if (c == 10) // newline
+        c = space;
+
     if (variant != NormalVariant)
         return glyphDataForVariant(c, description, variant, resolvedEmojiPolicy);
 

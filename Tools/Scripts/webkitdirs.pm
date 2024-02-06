@@ -136,6 +136,7 @@ BEGIN {
        &isLinux
        &isMacCatalystWebKit
        &isPlayStation
+       &isQt
        &isWPE
        &isWinCairo
        &isWin64
@@ -228,6 +229,7 @@ use constant {
     Mac         => "Mac",
     MacCatalyst => "MacCatalyst",
     JSCOnly     => "JSCOnly",
+    Qt          => "Qt",
     PlayStation => "PlayStation",
     WinCairo    => "WinCairo",
     WPE         => "WPE",
@@ -794,6 +796,7 @@ sub argumentsForConfiguration()
     push(@args, '--32-bit') if ($architecture eq "x86" and !isWin64());
     push(@args, '--64-bit') if (isWin64());
     push(@args, '--gtk') if isGtk();
+    push(@args, '--qt') if isQt();
     push(@args, '--wpe') if isWPE();
     push(@args, '--jsc-only') if isJSCOnly();
     push(@args, '--wincairo') if isWinCairo();
@@ -1151,7 +1154,7 @@ sub executableProductDir
     my $binaryDirectory;
     if (isAnyWindows() && !isPlayStation()) {
         $binaryDirectory = isWin64() ? "bin64" : "bin32";
-    } elsif (isGtk() || isJSCOnly() || isWPE() || isPlayStation()) {
+    } elsif (isGtk() || isJSCOnly() || isWPE() || isPlayStation() || isQt()) {
         $binaryDirectory = "bin";
     } else {
         return $productDirectory;
@@ -1484,6 +1487,49 @@ sub builtDylibPathForName
     my $libraryName = shift;
     determineConfigurationProductDir();
 
+    if (isQt()) {
+        my $isSearchingForWebCore = $libraryName =~ "WebCore";
+        if (isDarwin()) {
+            $libraryName = "QtWebKitWidgets";
+        } else {
+            $libraryName = "Qt6WebKitWidgets";
+        }
+        my $result;
+        if (isDarwin() and -d "$configurationProductDir/lib/$libraryName.framework") {
+            $result = "$configurationProductDir/lib/$libraryName.framework/$libraryName";
+        } elsif (isDarwin() and -d "$configurationProductDir/lib") {
+            $result = "$configurationProductDir/lib/lib$libraryName.dylib";
+        } elsif (isWindows()) {
+            if (configuration() eq "Debug") {
+                # On Windows, there is a "d" suffix to the library name. See <http://trac.webkit.org/changeset/53924/>.
+                $libraryName .= "d";
+            }
+
+            my $qmakebin = "qmake"; # FIXME
+            chomp(my $mkspec = `$qmakebin -query QT_HOST_DATA`);
+            $mkspec .= "/mkspecs";
+            my $qtMajorVersion = retrieveQMakespecVar("$mkspec/qconfig.pri", "QT_MAJOR_VERSION");
+            if (not $qtMajorVersion) {
+                $qtMajorVersion = "";
+            }
+
+            $result = "$configurationProductDir/lib/$libraryName$qtMajorVersion.dll";
+        } else {
+            $result = "$configurationProductDir/lib/lib$libraryName.so";
+        }
+
+        if ($isSearchingForWebCore) {
+            # With CONFIG+=force_static_libs_as_shared we have a shared library for each subdir.
+            # For feature detection to work it is necessary to return the path of the WebCore library here.
+            my $replacedWithWebCore = $result;
+            $replacedWithWebCore =~ s/$libraryName/WebCore/g;
+            if (-e $replacedWithWebCore) {
+                return $replacedWithWebCore;
+            }
+        }
+
+        return $result;
+    }
     if (isGtk()) {
         my $extension = isDarwin() ? ".dylib" : ".so";
         my @apiVersions = ("4.0", "5.0");
@@ -1625,6 +1671,7 @@ sub determinePortName()
         gtk => GTK,
         'jsc-only' => JSCOnly,
         playstation => PlayStation,
+        qt  => Qt,
         wincairo => WinCairo,
         wpe => WPE
     );
@@ -1664,6 +1711,7 @@ sub determinePortName()
             my $portsChoice = join "\n\t", qw(
                 --gtk
                 --jsc-only
+                --qt
                 --wpe
             );
             die "Please specify which WebKit port to build using one of the following options:"
@@ -1690,6 +1738,11 @@ sub isGtk()
 sub isJSCOnly()
 {
     return portName() eq JSCOnly;
+}
+
+sub isQt()
+{
+    return portName() eq Qt;
 }
 
 sub isWPE()
@@ -2149,7 +2202,7 @@ sub relativeScriptsDir()
 sub launcherPath()
 {
     my $relativeScriptsPath = relativeScriptsDir();
-    if (isGtk() || isWPE()) {
+    if (isGtk() || isWPE() || isQt()) {
         if (inFlatpakSandbox()) {
             return "Tools/Scripts/run-minibrowser";
         }
@@ -2161,7 +2214,7 @@ sub launcherPath()
 
 sub launcherName()
 {
-    if (isGtk() || isWPE()) {
+    if (isGtk() || isWPE() || isQt()) {
         return "MiniBrowser";
     } elsif (isAppleMacWebKit()) {
         return "Safari";
@@ -2345,6 +2398,8 @@ sub getJhbuildPath()
     }
     if (isGtk()) {
         push(@jhbuildPath, "DependenciesGTK");
+    } elsif (isQt()) {
+        push(@jhbuildPath, "DependenciesQT");
     } elsif (isWPE()) {
         push(@jhbuildPath, "DependenciesWPE");
     } else {
@@ -2514,7 +2569,7 @@ sub wrapperPrefixIfNeeded()
     }
 
     # Returning () here means either Flatpak or no wrapper will be used.
-    if (isGtk() or isWPE()) {
+    if (isGtk() or isWPE() or isQt()) {
         # Respect user's choice.
         if (defined $ENV{'WEBKIT_JHBUILD'}) {
             if ($ENV{'WEBKIT_JHBUILD'} and -e getJhbuildPath()) {
@@ -2669,6 +2724,13 @@ sub canUseEclipseNinjaGenerator(@)
     return commandExists("eclipse") && exitStatus(system("cmake -N -G 'Eclipse CDT4 - Ninja' >$devnull 2>&1")) == 0;
 }
 
+sub canUseCodeBlocksNinjaGenerator
+{
+    # Check that CodeBlocks Ninja generator is installed
+    my $devnull = File::Spec->devnull();
+    return exitStatus(system("cmake -N -G 'CodeBlocks - Ninja' >$devnull 2>&1")) == 0;
+}
+
 sub cmakeGeneratedBuildfile(@)
 {
     my ($willUseNinja) = @_;
@@ -2722,6 +2784,8 @@ sub generateBuildSystemFromCMakeProject
         push @args, "-G";
         if (canUseEclipseNinjaGenerator()) {
             push @args, "'Eclipse CDT4 - Ninja'";
+        } elsif (isQt() && canUseCodeBlocksNinjaGenerator()) {
+            push @args, "'CodeBlocks - Ninja'";
         } else {
             push @args, "Ninja";
         }
@@ -2785,7 +2849,7 @@ sub buildCMakeGeneratedProject($)
     push @args, ("--", @makeArgs) if @makeArgs;
 
     # GTK and JSCOnly can use a build script to preserve colors and pretty-printing.
-    if ((isGtk() || isJSCOnly()) && -e "$buildPath/build.sh") {
+    if ((isGtk() || isJSCOnly() || isQt()) && -e "$buildPath/build.sh") {
         chdir "$buildPath" or die;
         $command = "$buildPath/build.sh";
         @args = (@makeArgs);
@@ -2820,6 +2884,10 @@ sub buildCMakeProjectOrExit($$$@)
         if (isGtk() && checkForArgumentAndRemoveFromARGV("--update-gtk")) {
             system("perl", File::Spec->catfile(sourceDir(), "Tools", "Scripts", "update-webkitgtk-libs")) == 0 or die $!;
         }
+        
+        if (isQt() && isAnyWindows() && checkForArgumentAndRemoveFromARGV("--update-qt")) {
+            system("perl", File::Spec->catfile(sourceDir(), "Tools", "Scripts", "update-qtwebkit-win-libs")) == 0 or die $!;
+        }
 
         if (isWPE() && checkForArgumentAndRemoveFromARGV("--update-wpe")) {
             system("perl", File::Spec->catfile(sourceDir(), "Tools", "Scripts", "update-webkitwpe-libs")) == 0 or die $!;
@@ -2831,6 +2899,13 @@ sub buildCMakeProjectOrExit($$$@)
     exit 0 if isGenerateProjectOnly();
 
     $returnCode = exitStatus(buildCMakeGeneratedProject($makeArgs));
+    exit($returnCode) if $returnCode;
+    return 0;
+}
+
+sub installCMakeProjectOrExit
+{
+    my $returnCode = exitStatus(system(qw(cmake -P cmake_install.cmake)));
     exit($returnCode) if $returnCode;
     return 0;
 }

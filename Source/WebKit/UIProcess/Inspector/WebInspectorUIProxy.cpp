@@ -786,7 +786,7 @@ void WebInspectorUIProxy::evaluateInFrontendForTesting(const String& expression)
 
 // Unsupported configurations can use the stubs provided here.
 
-#if !PLATFORM(MAC) && !PLATFORM(GTK) && !PLATFORM(WIN)
+#if !PLATFORM(MAC) && !PLATFORM(GTK) && !PLATFORM(WIN) && !PLATFORM(QT)
 
 WebPageProxy* WebInspectorUIProxy::platformCreateFrontendPage()
 {

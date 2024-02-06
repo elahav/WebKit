@@ -56,6 +56,10 @@
 #include "DynamicContentScalingDisplayList.h"
 #endif
 
+#if PLATFORM(QT)
+#include "ImageBufferUtilitiesQt.h"
+#endif
+
 namespace WebCore {
 
 static const float MaxClampedLength = 4096;
@@ -428,7 +432,11 @@ Vector<uint8_t> ImageBuffer::toData(Ref<ImageBuffer> source, const String& mimeT
     RefPtr<NativeImage> image = MIMETypeRegistry::isJPEGMIMEType(mimeType) ? copyImageBufferToOpaqueNativeImage(WTFMove(source), preserveResolution) : copyImageBufferToNativeImage(WTFMove(source), DontCopyBackingStore, preserveResolution);
     if (!image)
         return { };
+#if PLATFORM(QT)
+    return encodeData(image->platformImage(), mimeType, quality);
+#else
     return encodeData(image->platformImage().get(), mimeType, quality);
+#endif
 }
 
 RefPtr<PixelBuffer> ImageBuffer::getPixelBuffer(const PixelBufferFormat& destinationFormat, const IntRect& sourceRect, const ImageBufferAllocator& allocator) const

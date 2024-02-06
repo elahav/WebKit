@@ -69,6 +69,10 @@ public:
     CachedImage* image() const { return m_image.get(); }
     void clearImage(); // Cancels pending load events, and doesn't dispatch new ones.
     
+#if PLATFORM(QT)
+    void setImage(CachedImage*);
+#endif
+    
     size_t pendingDecodePromisesCountForTesting() const { return m_decodingPromises.size(); }
     void decode(Ref<DeferredPromise>&&);
 
@@ -107,6 +111,9 @@ private:
     RenderImageResource* renderImageResource();
     void updateRenderer();
 
+#if PLATFORM(QT)
+    void setImageWithoutConsideringPendingLoadEvent(CachedImage*);
+#endif
     void clearImageWithoutConsideringPendingLoadEvent();
     void clearFailedLoadURL();
 

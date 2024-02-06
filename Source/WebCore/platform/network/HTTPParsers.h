@@ -47,6 +47,15 @@ enum class XSSProtectionDisposition {
     Enabled,
     BlockEnabled,
 };
+    
+#if PLATFORM(QT)
+    enum ContentDispositionType {
+        ContentDispositionNone,
+        ContentDispositionInline,
+        ContentDispositionAttachment,
+        ContentDispositionOther
+    };
+#endif
 
 enum class ContentTypeOptionsDisposition : bool {
     None,
@@ -78,6 +87,10 @@ enum class ClearSiteDataValue : uint8_t {
 };
 
 enum class RangeAllowWhitespace : bool { No, Yes };
+
+#if PLATFORM(QT)
+ContentDispositionType contentDispositionType(const String&);
+#endif
 
 bool isValidReasonPhrase(const String&);
 bool isValidHTTPHeaderValue(const String&);

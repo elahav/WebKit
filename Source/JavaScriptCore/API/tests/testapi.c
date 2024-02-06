@@ -1280,7 +1280,7 @@ static void testMarkingConstraintsAndHeapFinalizers(void)
     printf("PASS: Marking Constraints and Heap Finalizers.\n");
 }
 
-#if USE(CF)
+#if USE(CF) && !PLATFORM(QT)
 static void testCFStrings(void)
 {
     /* The assertion utility functions we use below expects to get the JSGlobalContextRef
@@ -1430,7 +1430,11 @@ static bool samplingProfilerTest(void)
     return false;
 }
 
+#if PLATFORM(QT)
+int qt_main(int argc, char* argv[])
+#else
 int main(int argc, char* argv[])
+#endif
 {
 #if OS(WINDOWS)
     // Cygwin calls SetErrorMode(SEM_FAILCRITICALERRORS), which we will inherit. This is bad for
@@ -1473,7 +1477,7 @@ int main(int argc, char* argv[])
 
     testMarkingConstraintsAndHeapFinalizers();
 
-#if USE(CF)
+#if USE(CF) && !PLATFORM(QT)
     testCFStrings();
 #endif
 
@@ -2076,7 +2080,7 @@ int main(int argc, char* argv[])
         ASSERT((!scriptObject) != (!errorMessage));
         if (!scriptObject) {
             printf("FAIL: Test script did not parse\n\t%s:%d\n\t", scriptPath, errorLine);
-#if USE(CF)
+#if USE(CF) && !PLATFORM(QT)
             CFStringRef errorCF = JSStringCopyCFString(kCFAllocatorDefault, errorMessage);
             CFShow(errorCF);
             CFRelease(errorCF);
@@ -2093,7 +2097,7 @@ int main(int argc, char* argv[])
         else {
             printf("FAIL: Test script returned unexpected value:\n");
             JSStringRef exceptionIString = JSValueToStringCopy(context, exception, NULL);
-#if USE(CF)
+#if USE(CF) && !PLATFORM(QT)
             CFStringRef exceptionCF = JSStringCopyCFString(kCFAllocatorDefault, exceptionIString);
             CFShow(exceptionCF);
             CFRelease(exceptionCF);

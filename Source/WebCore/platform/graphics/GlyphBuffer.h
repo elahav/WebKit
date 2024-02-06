@@ -38,6 +38,10 @@
 #include <wtf/CheckedRef.h>
 #include <wtf/Vector.h>
 
+#if PLATFORM(QT)
+#include <QPointF>
+#endif
+
 namespace WebCore {
 
 static const constexpr GlyphBufferGlyph deletedGlyph = 0xFFFF;

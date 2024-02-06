@@ -231,5 +231,16 @@ void DownloadProxy::setClient(Ref<API::DownloadClient>&& client)
     m_client = WTFMove(client);
 }
 
+#if PLATFORM(QT)
+void DownloadProxy::startTransfer(const String& filename)
+{
+    if (!m_processPool)
+        return;
+
+    if (NetworkProcessProxy* networkProcess = m_processPool->networkProcess())
+        networkProcess->connection()->send(Messages::NetworkProcess::StartTransfer(m_downloadID, filename), 0);
+}
+#endif
+
 } // namespace WebKit
 

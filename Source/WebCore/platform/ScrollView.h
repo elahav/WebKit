@@ -186,7 +186,7 @@ public:
     // which usually will happen when panning, pinching and rotation ends, or when scale or position are changed manually.
     IntSize visibleSize() const final { return visibleContentRect(LegacyIOSDocumentVisibleRect).size(); }
 
-#if USE(COORDINATED_GRAPHICS)
+#if USE(COORDINATED_GRAPHICS) || PLATFORM(QT)
     virtual void setFixedVisibleContentRect(const IntRect& visibleContentRect) { m_fixedVisibleContentRect = visibleContentRect; }
     IntRect fixedVisibleContentRect() const { return m_fixedVisibleContentRect; }
 #endif
@@ -534,7 +534,7 @@ private:
     };
     std::optional<DelegatedScrollingGeometry> m_delegatedScrollingGeometry;
 
-#if USE(COORDINATED_GRAPHICS)
+#if USE(COORDINATED_GRAPHICS) || PLATFORM(QT)
     // FIXME: exposedContentRect is a very similar concept to fixedVisibleContentRect except it does not differentiate
     // between exposed and unobscured areas. The two attributes should eventually be merged.
     IntRect m_fixedVisibleContentRect;

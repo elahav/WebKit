@@ -246,7 +246,7 @@ if (ENABLE_WEBCORE)
 endif ()
 
 # TestWebKitLegacy definitions
-if (ENABLE_WEBKIT_LEGACY)
+if (FALSE) #ENABLE_WEBKIT_LEGACY)
     set(TestWebKitLegacy_SOURCES
         TestsController.cpp
     )
@@ -439,9 +439,9 @@ if (ENABLE_WEBCORE)
 endif ()
 
 # TestWebKitLegacy target
-if (ENABLE_WEBKIT_LEGACY)
-    WEBKIT_TEST(TestWebKitLegacy)
-endif ()
+#if (ENABLE_WEBKIT_LEGACY)
+#    WEBKIT_TEST(TestWebKitLegacy)
+#endif ()
 
 # TestWebKit target
 if (ENABLE_WEBKIT)

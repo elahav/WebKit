@@ -332,6 +332,11 @@ void AuxiliaryProcessProxy::didFinishLaunching(ProcessLauncher*, IPC::Connection
     m_lifetimeActivity = throttler().foregroundActivity("Lifetime Activity"_s).moveToUniquePtr();
     m_boostedJetsamAssertion = ProcessAssertion::create(*this, "Jetsam Boost"_s, ProcessAssertionType::BoostedJetsam);
 #endif
+    
+#if PLATFORM(QT) && USE(UNIX_DOMAIN_SOCKETS)
+    //WIP
+    //m_connection->setShouldCloseConnectionOnProcessTermination(processIdentifier());
+#endif
 
     RefPtr connection = IPC::Connection::createServerConnection(connectionIdentifier);
     m_connection = connection.copyRef();

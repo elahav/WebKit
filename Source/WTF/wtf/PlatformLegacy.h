@@ -39,6 +39,7 @@
 
 
 /* FIXME: these are all mixes of OS, operating environment and policy choices. */
+/* PLATFORM(QT) */
 /* PLATFORM(GTK) */
 /* PLATFORM(MAC) */
 /* PLATFORM(IOS) */
@@ -46,7 +47,9 @@
 /* PLATFORM(IOS_SIMULATOR) */
 /* PLATFORM(IOS_FAMILY_SIMULATOR) */
 /* PLATFORM(WIN) */
-#if defined(BUILDING_GTK__)
+#if defined(BUILDING_QT__)
+#define WTF_PLATFORM_QT 1
+#elif defined(BUILDING_GTK__)
 #define WTF_PLATFORM_GTK 1
 #elif defined(BUILDING_WPE__)
 #define WTF_PLATFORM_WPE 1

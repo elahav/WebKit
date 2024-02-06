@@ -250,11 +250,11 @@ PlatformImagePtr ScalableImageDecoder::createFrameImageAtIndex(size_t index, Sub
     Locker locker { m_lock };
     // Zero-height images can cause problems for some ports. If we have an empty image dimension, just bail.
     if (size().isEmpty())
-        return nullptr;
+        return QImage();// nullptr;
 
     auto* buffer = frameBufferAtIndex(index);
     if (!buffer || buffer->isInvalid() || !buffer->hasBackingStore())
-        return nullptr;
+        return QImage();// nullptr;
 
     // Return the buffer contents as a native image. For some ports, the data
     // is already in a native container, and this just increments its refcount.

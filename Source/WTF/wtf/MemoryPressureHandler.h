@@ -37,7 +37,7 @@
 #include <wtf/win/Win32Handle.h>
 #endif
 
-#if PLATFORM(COCOA)
+#if PLATFORM(COCOA) || (PLATFORM(QT) && OS(DARWIN))
 #include <wtf/OSObjectPtr.h>
 #endif
 
@@ -132,7 +132,7 @@ public:
 
     WTF_EXPORT_PRIVATE MemoryUsagePolicy currentMemoryUsagePolicy();
 
-#if PLATFORM(COCOA)
+#if PLATFORM(COCOA) || (PLATFORM(QT) && OS(DARWIN))
     void setDispatchQueue(OSObjectPtr<dispatch_queue_t>&& queue)
     {
         RELEASE_ASSERT(!m_installed);
@@ -261,7 +261,7 @@ private:
     void holdOffTimerFired();
 #endif
 
-#if PLATFORM(COCOA)
+#if PLATFORM(COCOA) || (PLATFORM(QT) && OS(DARWIN))
     OSObjectPtr<dispatch_queue_t> m_dispatchQueue;
 #endif
 };

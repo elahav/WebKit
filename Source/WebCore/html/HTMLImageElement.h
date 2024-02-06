@@ -83,6 +83,9 @@ public:
     CompositeOperator compositeOperator() const { return m_compositeOperator; }
 
     WEBCORE_EXPORT CachedImage* cachedImage() const;
+#if PLATFORM(QT)
+    void setCachedImage(CachedImage*);
+#endif
 
     void setLoadManually(bool);
 

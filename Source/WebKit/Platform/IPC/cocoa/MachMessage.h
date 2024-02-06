@@ -25,7 +25,7 @@
 
 #pragma once
 
-#if PLATFORM(COCOA)
+#if PLATFORM(COCOA) || (PLATFORM(QT) && USE(MACH_PORTS))
 
 #include "MessageNames.h"
 #include <mach/message.h>
@@ -62,4 +62,4 @@ private:
 
 }
 
-#endif // PLATFORM(COCOA)
+#endif // PLATFORM(COCOA) || (PLATFORM(QT) && USE(MACH_PORTS))

@@ -41,9 +41,9 @@
 #endif
 #endif
 
-#if !OS(WINDOWS)
+#if !OS(WINDOWS) || PLATFORM(QT)
 #include <pthread.h>
-#endif // !OS(WINDOWS)
+#endif // !OS(WINDOWS) || PLATFORM(QT)
 
 #include <sys/types.h>
 #include <fcntl.h>
@@ -160,7 +160,7 @@
 
 #ifdef __cplusplus
 
-#if !PLATFORM(WIN)
+#if !PLATFORM(WIN) && !PLATFORM(QT)
 #import <wtf/FastMalloc.h>
 #import <wtf/HashMap.h>
 #import <wtf/IsoMallocInlines.h>

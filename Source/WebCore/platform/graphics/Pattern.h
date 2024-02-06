@@ -39,6 +39,9 @@ typedef RetainPtr<CGPatternRef> PlatformPatternPtr;
 #elif USE(CAIRO)
 typedef struct _cairo_pattern cairo_pattern_t;
 typedef cairo_pattern_t* PlatformPatternPtr;
+#elif PLATFORM(QT)
+#include <QBrush>
+typedef QBrush PlatformPatternPtr;
 #endif
 
 namespace WebCore {
@@ -69,7 +72,12 @@ public:
     const Parameters& parameters() const { return m_parameters; }
 
     // Pattern space is an abstract space that maps to the default user space by the transformation 'userSpaceTransform'
+#if PLATFORM(QT)
+    // Qt ignores user space transformation and uses pattern's instead
+    PlatformPatternPtr createPlatformPattern() const;
+#else
     PlatformPatternPtr createPlatformPattern(const AffineTransform& userSpaceTransform) const;
+#endif
 
     void setTileImage(SourceImage&& tileImage) { m_tileImage = WTFMove(tileImage); }
     void setPatternSpaceTransform(const AffineTransform&);

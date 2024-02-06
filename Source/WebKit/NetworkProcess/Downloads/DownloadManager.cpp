@@ -161,6 +161,15 @@ AuthenticationManager& DownloadManager::downloadsAuthenticationManager()
     return m_client->downloadsAuthenticationManager();
 }
 
+#if PLATFORM(QT)
+void DownloadManager::startTransfer(DownloadID downloadID, const String& destination)
+{
+    ASSERT(m_downloads.contains(downloadID));
+    Download* download = m_downloads.get(downloadID);
+    download->startTransfer(destination);
+}
+#endif
+
 void DownloadManager::applicationDidEnterBackground()
 {
     for (auto& download : m_downloads.values())

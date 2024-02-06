@@ -931,7 +931,7 @@ static bool executePasteFont(LocalFrame& frame, Event*, EditorCommandSource sour
     return true;
 }
 
-#if PLATFORM(GTK)
+#if PLATFORM(GTK) || PLATFORM(QT)
 
 static bool executePasteGlobalSelection(LocalFrame& frame, Event*, EditorCommandSource source, const String&)
 {
@@ -1811,7 +1811,7 @@ static const CommandMap& createCommandMap()
         { "Yank"_s, { executeYank, supportedFromMenuOrKeyBinding, enabledInEditableText, stateNone, valueNull, notTextInsertion, doNotAllowExecutionWhenDisabled } },
         { "YankAndSelect"_s, { executeYankAndSelect, supportedFromMenuOrKeyBinding, enabledInEditableText, stateNone, valueNull, notTextInsertion, doNotAllowExecutionWhenDisabled } },
 
-#if PLATFORM(GTK)
+#if PLATFORM(GTK) || PLATFORM(QT)
         { "PasteGlobalSelection"_s, { executePasteGlobalSelection, supportedFromMenuOrKeyBinding, enabledPaste, stateNone, valueNull, notTextInsertion, allowExecutionWhenDisabled } },
 #endif
 

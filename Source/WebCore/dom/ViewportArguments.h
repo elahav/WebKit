@@ -142,7 +142,7 @@ struct ViewportArguments {
             && widthWasExplicit == other.widthWasExplicit;
     }
 
-#if PLATFORM(GTK)
+#if PLATFORM(GTK) || PLATFORM(QT)
     // FIXME: We're going to keep this constant around until all embedders
     // refactor their code to no longer need it.
     static const float deprecatedTargetDPI;

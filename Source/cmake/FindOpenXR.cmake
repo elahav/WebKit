@@ -43,5 +43,10 @@ find_library(OPENXR_LIBRARIES
 
 mark_as_advanced(OPENXR_INCLUDE_DIRS OPENXR_LIBRARIES)
 
+if (NOT PC_WOFF2DEC_VERSION)
+    # When not using pkg-config, we acept any version
+    set(PC_WOFF2DEC_VERSION ${WOFF2Dec_FIND_VERSION})
+endif ()
+
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(OpenXR FOUND_VAR OPENXR_FOUND REQUIRED_VARS OPENXR_INCLUDE_DIRS OPENXR_LIBRARIES)

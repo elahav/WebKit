@@ -169,6 +169,8 @@ my (
     $xsltSupport,
 );
 
+sub isQtGstreamer { return isQt() && !isAnyWindows() && !isDarwin() }
+
 my @features = (
     { option => "fatal-warnings", desc => "Toggle warnings as errors (CMake only)",
       define => "DEVELOPER_MODE_FATAL_WARNINGS", value => \$fatalWarnings },

@@ -110,7 +110,7 @@ class Region;
 class TextIndicator;
 class WebMediaSessionManager;
 
-#if PLATFORM(GTK)
+#if PLATFORM(GTK) || PLATFORM(QT)
 class SelectionData;
 #endif
 
@@ -178,6 +178,10 @@ struct FrameInfoData;
 struct InteractionInformationAtPosition;
 struct WebAutocorrectionContext;
 struct WebHitTestResultData;
+
+#if ENABLE(QT_GESTURE_EVENTS)
+class WebGestureEvent;
+#endif
 
 #if ENABLE(TOUCH_EVENTS)
 class NativeWebTouchEvent;
@@ -276,6 +280,10 @@ public:
     virtual void didFailProvisionalLoadForMainFrame() { };
     virtual void didCommitLoadForMainFrame(const String& mimeType, bool useCustomContentProvider) = 0;
 
+#if PLATFORM(QT)
+    virtual void updateTextInputState() = 0;
+#endif
+
 #if ENABLE(PDF_HUD)
     virtual void createPDFHUD(PDFPluginIdentifier, const WebCore::IntRect&) = 0;
     virtual void updatePDFHUDLocation(PDFPluginIdentifier, const WebCore::IntRect&) = 0;
@@ -305,6 +313,13 @@ public:
     virtual void didPerformDragControllerAction() { }
     virtual void didChangeDragCaretRect(const WebCore::IntRect& /*previousCaretRect*/, const WebCore::IntRect& /*caretRect*/) { }
 #endif // ENABLE(DRAG_SUPPORT)
+
+#if PLATFORM(QT)
+    virtual void handleAuthenticationRequiredRequest(const String& hostname, const String& realm, const String& prefilledUsername, String& username, String& password) = 0;
+    virtual void handleCertificateVerificationRequest(const String& hostname, bool& ignoreErrors) = 0;
+    virtual void handleProxyAuthenticationRequiredRequest(const String& hostname, uint16_t port, const String& prefilledUsername, String& username, String& password) = 0;
+    virtual void handleWillSetInputMethodState() = 0;
+#endif // PLATFORM(QT).
 
     virtual void setCursor(const WebCore::Cursor&) = 0;
     virtual void setCursorHiddenUntilMouseMoves(bool) = 0;
@@ -383,6 +398,9 @@ public:
 #endif
 
     virtual void doneWithKeyEvent(const NativeWebKeyboardEvent&, bool wasEventHandled) = 0;
+#if ENABLE(QT_GESTURE_EVENTS)
+    virtual void doneWithGestureEvent(const WebGestureEvent&, bool wasEventHandled) = 0;
+#endif
 #if ENABLE(TOUCH_EVENTS)
     virtual void doneWithTouchEvent(const NativeWebTouchEvent&, bool wasEventHandled) = 0;
 #endif

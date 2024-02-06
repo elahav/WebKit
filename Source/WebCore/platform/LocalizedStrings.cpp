@@ -27,6 +27,8 @@
 #include "config.h"
 #include "LocalizedStrings.h"
 
+#if !PLATFORM(QT)
+
 #include "IntSize.h"
 #include "NotImplemented.h"
 #include <wtf/MathExtras.h>
@@ -1537,3 +1539,5 @@ String genericTouchIDPromptTitle()
 #endif // ENABLE(WEB_AUTHN)
 
 } // namespace WebCore
+
+#endif

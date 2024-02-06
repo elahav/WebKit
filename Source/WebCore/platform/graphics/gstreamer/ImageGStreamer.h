@@ -67,7 +67,7 @@ private:
     GRefPtr<GstSample> m_sample;
     RefPtr<BitmapImage> m_image;
     FloatRect m_cropRect;
-#if USE(CAIRO)
+#if USE(CAIRO) || PLATFORM(QT)
     GstVideoFrame m_videoFrame;
     bool m_frameMapped { false };
 #endif

@@ -332,7 +332,7 @@ void ContextMenuController::contextMenuItemSelected(ContextMenuAction action, co
         // For now, call into the client. This is temporary!
         frame->editor().copyImage(m_context.hitTestResult());
         break;
-#if PLATFORM(GTK)
+#if PLATFORM(GTK) || PLATFORM(QT)
     case ContextMenuItemTagCopyImageURLToClipboard:
         frame->editor().copyURL(m_context.hitTestResult().absoluteImageURL(), m_context.hitTestResult().textContent());
         break;
@@ -457,9 +457,13 @@ void ContextMenuController::contextMenuItemSelected(ContextMenuAction action, co
     case ContextMenuItemTagUnicodeInsertZWNJMark:
         insertUnicodeCharacter(zeroWidthNonJoiner, *frame);
         break;
+#endif
+#if PLATFORM(GTK) || PLATFORM(QT)
     case ContextMenuItemTagSelectAll:
         frame->editor().command("SelectAll"_s).execute();
         break;
+#endif
+#if PLATFORM(GTK)
     case ContextMenuItemTagInsertEmoji:
         m_client->insertEmoji(*frame);
         break;
@@ -511,6 +515,12 @@ void ContextMenuController::contextMenuItemSelected(ContextMenuAction action, co
         } else
             openNewWindow(m_context.hitTestResult().absoluteLinkURL(), *frame, eventForLoadRequests.get(), ShouldOpenExternalURLsPolicy::ShouldAllow);
         break;
+#if PLATFORM(QT)
+    case ContextMenuItemTagOpenLinkInThisWindow:
+        // QTFIXME: Use ContextMenuItemTagOpenLink?
+//        frame->loader().loadFrameRequest(FrameLoadRequest(frame->document()->securityOrigin(), ResourceRequest(m_context.hitTestResult().absoluteLinkURL(), frame->loader().outgoingReferrer()), LockHistory::No, LockBackForwardList::No, MaybeSendReferrer, AllowNavigationToInvalidURL::Yes, NewFrameOpenerPolicy::Suppress, ShouldOpenExternalURLsPolicy::ShouldAllowExternalSchemes), nullptr, nullptr);
+        break;
+#endif
     case ContextMenuItemTagBold:
         frame->editor().command("ToggleBold"_s).execute();
         break;
@@ -875,7 +885,7 @@ void ContextMenuController::createAndAppendTransformationsSubMenu(ContextMenuIte
 
 #endif
 
-#if PLATFORM(COCOA)
+#if PLATFORM(COCOA) || PLATFORM(QT)
 #define SUPPORTS_TOGGLE_VIDEO_FULLSCREEN 1
 #else
 #define SUPPORTS_TOGGLE_VIDEO_FULLSCREEN 0
@@ -902,7 +912,7 @@ void ContextMenuController::populate()
         contextMenuItemTagDownloadImageToDisk());
     ContextMenuItem CopyImageItem(ContextMenuItemType::Action, ContextMenuItemTagCopyImageToClipboard,
         contextMenuItemTagCopyImageToClipboard());
-#if PLATFORM(GTK)
+#if PLATFORM(GTK) || PLATFORM(QT)
     ContextMenuItem CopyImageURLItem(ContextMenuItemType::Action, ContextMenuItemTagCopyImageURLToClipboard,
         contextMenuItemTagCopyImageURLToClipboard());
 #endif
@@ -982,7 +992,11 @@ void ContextMenuController::populate()
 #if PLATFORM(GTK)
     ContextMenuItem PasteAsPlainTextItem(ContextMenuItemType::Action, ContextMenuItemTagPasteAsPlainText, contextMenuItemTagPasteAsPlainText());
     ContextMenuItem DeleteItem(ContextMenuItemType::Action, ContextMenuItemTagDelete, contextMenuItemTagDelete());
+#endif
+#if PLATFORM(GTK) || PLATFORM(QT)
     ContextMenuItem SelectAllItem(ContextMenuItemType::Action, ContextMenuItemTagSelectAll, contextMenuItemTagSelectAll());
+#endif
+#if PLATFORM(GTK)
     ContextMenuItem InsertEmojiItem(ContextMenuItemType::Action, ContextMenuItemTagInsertEmoji, contextMenuItemTagInsertEmoji());
 #endif
 #if ENABLE(IMAGE_ANALYSIS)
@@ -1070,6 +1084,10 @@ void ContextMenuController::populate()
                 appendItem(OpenLinkInNewWindowItem, m_contextMenu.get());
                 appendItem(DownloadFileItem, m_contextMenu.get());
             }
+#if PLATFORM(QT)
+            if (m_context.hitTestResult().isSelected())
+                appendItem(CopyItem, m_contextMenu.get());
+#endif
             appendItem(CopyLinkItem, m_contextMenu.get());
         }
 
@@ -1108,7 +1126,7 @@ void ContextMenuController::populate()
                 }
 #endif // ENABLE(ACCESSIBILITY_ANIMATION_CONTROL)
             }
-#if PLATFORM(GTK)
+#if PLATFORM(GTK) || PLATFORM(QT)
             appendItem(CopyImageURLItem, m_contextMenu.get());
 #endif
         }
@@ -1313,7 +1331,11 @@ void ContextMenuController::populate()
             appendItem(PasteAsPlainTextItem, m_contextMenu.get());
         appendItem(DeleteItem, m_contextMenu.get());
         appendItem(*separatorItem(), m_contextMenu.get());
+#endif
+#if PLATFORM(GTK) || PLATFORM(QT)
         appendItem(SelectAllItem, m_contextMenu.get());
+#endif
+#if PLATFORM(GTK)
         appendItem(InsertEmojiItem, m_contextMenu.get());
 #endif
 
@@ -1513,6 +1535,11 @@ void ContextMenuController::checkOrEnableIfNeeded(ContextMenuItem& item) const
             shouldEnable = true;
             break;
 #endif
+#if PLATFORM(QT)
+        case ContextMenuItemTagSelectAll:
+            shouldEnable = true;
+            break;
+#endif
         case ContextMenuItemTagUnderline: {
             shouldCheck = frame->editor().selectionHasStyle(CSSPropertyWebkitTextDecorationsInEffect, "underline"_s) != TriState::False;
             shouldEnable = frame->editor().canEditRichly();
@@ -1626,12 +1653,15 @@ void ContextMenuController::checkOrEnableIfNeeded(ContextMenuItem& item) const
 #endif
         case ContextMenuItemTagNoAction:
         case ContextMenuItemTagOpenLinkInNewWindow:
+#if PLATFORM(QT)
+        case ContextMenuItemTagOpenLinkInThisWindow:
+#endif
         case ContextMenuItemTagDownloadLinkToDisk:
         case ContextMenuItemTagCopyLinkToClipboard:
         case ContextMenuItemTagOpenImageInNewWindow:
         case ContextMenuItemTagCopyImageToClipboard:
         case ContextMenuItemTagCopySubject:
-#if PLATFORM(GTK)
+#if PLATFORM(GTK) || PLATFORM(QT)
         case ContextMenuItemTagCopyImageURLToClipboard:
 #endif
             break;
@@ -1752,6 +1782,12 @@ void ContextMenuController::checkOrEnableIfNeeded(ContextMenuItem& item) const
                 item.setTitle(contextMenuItemTagMediaPlay());
             break;
         case ContextMenuItemTagMediaMute:
+#if PLATFORM(QT)
+            if (m_context.hitTestResult().mediaMuted())
+                item.setTitle(contextMenuItemTagMediaUnmute());
+            else
+                item.setTitle(contextMenuItemTagMediaMute());
+#endif
             shouldEnable = m_context.hitTestResult().mediaHasAudio();
             shouldCheck = shouldEnable &&  m_context.hitTestResult().mediaMuted();
             break;

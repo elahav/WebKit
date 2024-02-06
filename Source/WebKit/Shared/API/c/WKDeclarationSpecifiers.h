@@ -42,6 +42,12 @@
 #endif /* defined(BUILDING_WebKit) */
 #elif defined(__GNUC__)
 #define WK_EXPORT __attribute__((visibility("default")))
+#elif defined(WIN32) || defined(_WIN32) || defined(_WIN32_WCE) || defined(__CC_ARM) || defined(__ARMCC__)
+#if BUILDING_WEBKIT
+#define WK_EXPORT __declspec(dllexport)
+#else
+#define WK_EXPORT __declspec(dllimport)
+#endif
 #else /* !defined(WK_NO_EXPORT) */
 #define WK_EXPORT
 #endif /* defined(WK_NO_EXPORT) */
@@ -51,6 +57,8 @@
 #define WK_INLINE static inline
 #elif defined(__GNUC__)
 #define WK_INLINE static __inline__
+#elif defined(__WIN32__)
+#define WK_INLINE static __inline
 #else
 #define WK_INLINE static
 #endif

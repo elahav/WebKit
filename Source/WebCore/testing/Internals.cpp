@@ -269,6 +269,10 @@
 #include "ColorChooser.h"
 #endif
 
+#if ENABLE(TOUCH_ADJUSTMENT)
+#include "WebKitPoint.h"
+#endif
+
 #if ENABLE(MOUSE_CURSOR_SCALE)
 #include <wtf/dtoa.h>
 #endif
@@ -300,6 +304,11 @@
 #include "LocalDOMWindowSpeechSynthesis.h"
 #include "PlatformSpeechSynthesizerMock.h"
 #include "SpeechSynthesis.h"
+#endif
+
+#if PLATFORM(QT)
+#include "NetworkingContext.h"
+#include <QNetworkAccessManager>
 #endif
 
 #if ENABLE(MEDIA_STREAM)
@@ -617,6 +626,13 @@ void Internals::resetToConsistentState(Page& page)
     page.setShowAllPlugins(false);
     page.setLowPowerModeEnabledOverrideForTesting(std::nullopt);
     page.setOutsideViewportThrottlingEnabledForTesting(false);
+
+#if PLATFORM(QT)
+    if (NetworkingContext* context = downcast<LocalFrame>(page.mainFrame()).loader().networkingContext()) {
+        if (QNetworkAccessManager* qnam = context->networkAccessManager())
+            qnam->clearAccessCache();
+    }
+#endif
 
 #if USE(QUICK_LOOK)
     MockPreviewLoaderClient::singleton().setPassword(emptyString());

@@ -50,6 +50,12 @@ typedef struct _NSRect NSRect;
 typedef struct tagRECT RECT;
 #endif
 
+#if PLATFORM(QT)
+QT_BEGIN_NAMESPACE
+class QRect;
+QT_END_NAMESPACE
+#endif
+
 #if USE(CAIRO)
 typedef struct _cairo_rectangle_int cairo_rectangle_int_t;
 #endif
@@ -196,6 +202,9 @@ public:
 #if PLATFORM(WIN)
     WEBCORE_EXPORT IntRect(const RECT&);
     WEBCORE_EXPORT operator RECT() const;
+#elif PLATFORM(QT)
+    WEBCORE_EXPORT IntRect(const QRect&);
+    WEBCORE_EXPORT operator QRect() const;
 #endif
 
 #if USE(CAIRO)

@@ -206,6 +206,7 @@ set(WTF_PUBLIC_HEADERS
     PlatformEnableCocoa.h
     PlatformEnableGlib.h
     PlatformEnablePlayStation.h
+    PlatformEnableQt.h
     PlatformEnableWinCairo.h
     PlatformHave.h
     PlatformLegacy.h
@@ -667,6 +668,8 @@ if (MSVC)
     set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} /SUBSYSTEM:WINDOWS")
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SUBSYSTEM:WINDOWS")
 endif ()
+
+QT_ADD_EXTRA_WEBKIT_TARGET_EXPORT(WTF)
 
 file(MAKE_DIRECTORY ${WTF_SCRIPTS_DIR})
 

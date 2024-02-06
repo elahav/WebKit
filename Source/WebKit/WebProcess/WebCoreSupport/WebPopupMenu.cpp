@@ -64,9 +64,14 @@ void WebPopupMenu::didChangeSelectedIndex(int newIndex)
     if (!m_popupClient)
         return;
 
+#if PLATFORM(QT)
+    if (newIndex >= 0)
+        m_popupClient->listBoxSelectItem(newIndex, m_popupClient->multiple(), false);
+#else
     m_popupClient->popupDidHide();
     if (newIndex >= 0)
         m_popupClient->valueChanged(newIndex);
+#endif
 }
 
 void WebPopupMenu::setTextForIndex(int index)
@@ -127,7 +132,7 @@ void WebPopupMenu::updateFromElement()
 {
 }
 
-#if !PLATFORM(COCOA) && !PLATFORM(WIN)
+#if !PLATFORM(COCOA) && !PLATFORM(WIN) && !PLATFORM(QT)
 void WebPopupMenu::setUpPlatformData(const WebCore::IntRect&, PlatformPopupMenuData&)
 {
     notImplemented();

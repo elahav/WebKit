@@ -111,7 +111,7 @@
 #include "GLVideoSinkGStreamer.h"
 #endif // USE(GSTREAMER_GL)
 
-#if USE(TEXTURE_MAPPER)
+#if USE(TEXTURE_MAPPER) && !PLATFORM(QT)
 #include "BitmapTexture.h"
 #include "BitmapTexturePool.h"
 #include "GStreamerVideoFrameHolder.h"
@@ -155,7 +155,7 @@ MediaPlayerPrivateGStreamer::MediaPlayerPrivateGStreamer(MediaPlayer* player)
     , m_maxTimeLoadedAtLastDidLoadingProgress(MediaTime::zeroTime())
     , m_drawTimer(RunLoop::main(), this, &MediaPlayerPrivateGStreamer::repaint)
     , m_pausedTimerHandler(RunLoop::main(), this, &MediaPlayerPrivateGStreamer::pausedTimerFired)
-#if USE(TEXTURE_MAPPER) && !USE(NICOSIA)
+#if USE(TEXTURE_MAPPER) && !USE(NICOSIA) && !PLATFORM(QT)
     , m_platformLayerProxy(adoptRef(new TextureMapperPlatformLayerProxyGL))
 #endif
 #if !RELEASE_LOG_DISABLED
@@ -167,12 +167,12 @@ MediaPlayerPrivateGStreamer::MediaPlayerPrivateGStreamer(MediaPlayer* player)
 #endif
     , m_loader(player->createResourceLoader())
 {
-#if USE(GLIB)
+#if USE(GLIB) && !PLATFORM(QT)
     m_pausedTimerHandler.setPriority(G_PRIORITY_DEFAULT_IDLE);
 #endif
     m_isPlayerShuttingDown.store(false);
 
-#if USE(TEXTURE_MAPPER) && USE(NICOSIA)
+#if USE(TEXTURE_MAPPER) && USE(NICOSIA) && !PLATFORM(QT)
     m_nicosiaLayer = Nicosia::ContentLayer::create(*this,
         [&]() -> Ref<TextureMapperPlatformLayerProxy> {
 #if USE(TEXTURE_MAPPER_DMABUF)
@@ -228,7 +228,7 @@ MediaPlayerPrivateGStreamer::~MediaPlayerPrivateGStreamer()
     if (m_videoDecoderPlatform == GstVideoDecoderPlatform::Video4Linux)
         flushCurrentBuffer();
 #endif
-#if USE(TEXTURE_MAPPER) && USE(NICOSIA)
+#if USE(TEXTURE_MAPPER) && USE(NICOSIA) && !PLATFORM(QT)
     m_nicosiaLayer->invalidateClient();
 #endif
 
@@ -3187,7 +3187,7 @@ void MediaPlayerPrivateGStreamer::configureVideoDecoder(GstElement* decoder)
     if (gstObjectHasProperty(decoder, "max-errors"))
         g_object_set(decoder, "max-errors", 0, nullptr);
 
-#if USE(TEXTURE_MAPPER)
+#if USE(TEXTURE_MAPPER) && !PLATFORM(QT)
     updateTextureMapperFlags();
 #endif
 
@@ -3293,7 +3293,7 @@ void MediaPlayerPrivateGStreamer::isLoopingChanged()
     ensureSeekFlags();
 }
 
-#if USE(TEXTURE_MAPPER)
+#if USE(TEXTURE_MAPPER) && !PLATFORM(QT)
 PlatformLayer* MediaPlayerPrivateGStreamer::platformLayer() const
 {
 #if USE(NICOSIA)
@@ -3867,7 +3867,7 @@ void MediaPlayerPrivateGStreamer::triggerRepaint(GRefPtr<GstSample>&& sample)
         return;
     }
 
-#if USE(TEXTURE_MAPPER)
+#if USE(TEXTURE_MAPPER) && !PLATFORM(QT)
     if (m_isUsingFallbackVideoSink) {
         Locker locker { m_drawLock };
         auto proxyOperation =
@@ -4040,13 +4040,13 @@ bool MediaPlayerPrivateGStreamer::setVideoSourceOrientation(ImageOrientation ori
         return false;
 
     m_videoSourceOrientation = orientation;
-#if USE(TEXTURE_MAPPER)
+#if USE(TEXTURE_MAPPER) && !PLATFORM(QT)
     updateTextureMapperFlags();
 #endif
     return true;
 }
 
-#if USE(TEXTURE_MAPPER)
+#if USE(TEXTURE_MAPPER) && !PLATFORM(QT)
 void MediaPlayerPrivateGStreamer::updateTextureMapperFlags()
 {
     switch (m_videoSourceOrientation.orientation()) {

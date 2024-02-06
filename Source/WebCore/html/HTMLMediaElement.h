@@ -757,6 +757,9 @@ private:
     void scheduleMediaEngineWasUpdated();
     void mediaEngineWasUpdated();
 
+#if PLATFORM(QT)
+    Document* mediaPlayerOwningDocument() override;
+#endif
 
 #if ENABLE(LEGACY_ENCRYPTED_MEDIA)
     RefPtr<ArrayBuffer> mediaPlayerCachedKeyForKeyId(const String& keyId) const final;

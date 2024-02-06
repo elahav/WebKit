@@ -49,6 +49,10 @@ public:
     // need to call this from non-member functions at the moment.
     void fired();
 
+#if PLATFORM(QT)
+    bool hasFiredFunction() const { return bool(m_firedFunction); }
+#endif
+
     WEBCORE_EXPORT static bool& shouldSetupPowerObserver();
     WEBCORE_EXPORT static void restartSharedTimer();
 
@@ -56,7 +60,7 @@ private:
     MainThreadSharedTimer();
 
     Function<void()> m_firedFunction;
-#if !USE(CF) && !OS(WINDOWS)
+#if !USE(CF) && !OS(WINDOWS) && !PLATFORM(QT)
     RunLoop::Timer m_timer;
 #endif
 };

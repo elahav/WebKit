@@ -44,6 +44,11 @@
 #include <wtf/RetainPtr.h>
 #endif
 
+#if PLATFORM(QT)
+#include <QPointer>
+#include <qglobal.h>
+#endif
+
 #if PLATFORM(COCOA)
 OBJC_CLASS NSView;
 OBJC_CLASS NSWindow;
@@ -51,11 +56,21 @@ typedef NSView *PlatformWidget;
 #elif PLATFORM(WIN)
 typedef struct HWND__* HWND;
 typedef HWND PlatformWidget;
+#elif PLATFORM(QT)
+QT_BEGIN_NAMESPACE
+class QObject;
+QT_END_NAMESPACE
+typedef QObject* PlatformWidget;
 #else
 typedef void* PlatformWidget;
 #endif
 
+#if PLATFORM(QT)
+class QWebPageClient;
+typedef QWebPageClient* PlatformPageClient;
+#else
 typedef PlatformWidget PlatformPageClient;
+#endif
 
 namespace WebCore {
 
@@ -188,6 +203,11 @@ public:
     void addToSuperview(NSView*);
 #endif
 
+#if PLATFORM(QT)
+    QObject* bindingObject() const;
+    void setBindingObject(QObject*);
+#endif
+
     // Virtual methods to convert points to/from the containing ScrollView
     WEBCORE_EXPORT virtual IntRect convertToContainingView(const IntRect&) const;
     WEBCORE_EXPORT virtual IntRect convertFromContainingView(const IntRect&) const;
@@ -221,6 +241,10 @@ private:
 #endif
 
     IntRect m_frame; // Not used when a native widget exists.
+
+#if PLATFORM(QT)
+    QPointer<QObject> m_bindingObject;
+#endif
 };
 
 #if !PLATFORM(COCOA)

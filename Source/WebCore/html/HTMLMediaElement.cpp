@@ -2555,6 +2555,13 @@ void HTMLMediaElement::cancelPendingEventsAndCallbacks()
     rejectPendingPlayPromises(WTFMove(m_pendingPlayPromises), DOMException::create(ExceptionCode::AbortError));
 }
 
+#if PLATFORM(QT)
+Document* HTMLMediaElement::mediaPlayerOwningDocument()
+{
+    return &document();
+}
+#endif
+
 void HTMLMediaElement::mediaPlayerNetworkStateChanged()
 {
     beginProcessingMediaPlayerCallback();

@@ -71,6 +71,7 @@ my $minimal = 0;
 my $installHeaders;
 my $installLibs;
 my $prefixPath;
+my $shouldInstall = 0;
 my $makeArgs = "";
 my @cmakeArgs;
 my $onlyWebKitProject = 0;
@@ -131,6 +132,7 @@ Usage: $programName [options] [options to pass to build system]
   --cross-target=<target_machine>   Use the cross-toolchain-helper to build WebKit for the specified machine (Linux platforms only)
 
   --gtk                             Build the GTK+ port
+  --qt                              Build the Qt port
   --wpe                             Build the WPE port
   --wincairo                        Build the Windows port
   --playstation                     Build the PlayStation port
@@ -138,6 +140,7 @@ Usage: $programName [options] [options to pass to build system]
   --inspector-frontend              Copy Web Inspector user interface resources to the build directory
 
   --prefix=<path>                   Set installation prefix to the given path (CMake only, except Windows)
+  --install                         Install into given prefix after compilation
   --makeargs=<arguments>            Optional Makefile flags
   --cmakeargs=<arguments>           One or more optional CMake flags (e.g. --cmakeargs="-DFOO=bar -DCMAKE_PREFIX_PATH=/usr/local")
 
@@ -161,6 +164,7 @@ my %options = (
     'install-headers=s' => \$installHeaders,
     'install-libs=s' => \$installLibs,
     'prefix=s' => \$prefixPath,
+    'install' => \$shouldInstall,
     'makeargs=s' => \$makeArgs,
     'cmakeargs=s' => \@cmakeArgs,
     'minimal' => \$minimal,
@@ -290,6 +294,8 @@ if (isAppleCocoaWebKit()) {
 
 } elsif (isWinCairo() && !$skipLibraryUpdate) {
     (system("python Tools/Scripts/update-webkit-wincairo-libs.py") == 0) or die;
+} elsif (isQt() && isAnyWindows()) {
+    (system("perl Tools/Scripts/update-qtwebkit-win-libs") == 0) or die;
 }
 
 # If asked to build just the WebKit project, overwrite the projects
@@ -304,7 +310,7 @@ if (isInspectorFrontend()) {
     @projects = ("Source/WebInspectorUI");
 }
 
-if (isCMakeBuild() && !isAnyWindows()) {
+if (isCMakeBuild() && (!isAnyWindows() || isQt())) {
     if (!canUseNinja() || defined($ENV{NUMBER_OF_PROCESSORS})) {
         # If the user environment is not setting a specific number of process,
         # then don't pass the number of jobs to Ninja. Because Ninja will
@@ -321,6 +327,10 @@ if (isCMakeBuild() && !isAnyWindows()) {
     removeCMakeCache(@featureArgs);
 
     buildCMakeProjectOrExit($clean, $prefixPath, $makeArgs, @featureArgs, @cmakeArgs);
+
+    if ($shouldInstall) {
+        installCMakeProjectOrExit();
+    }
 }
 
 my $baseProductDir = baseProductDir();

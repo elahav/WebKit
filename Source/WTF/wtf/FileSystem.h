@@ -44,7 +44,7 @@
 #include <wtf/RetainPtr.h>
 #endif
 
-#if USE(CF)
+#if USE(CF) || (PLATFORM(QT) && defined(Q_OS_MACOS))
 typedef const struct __CFData* CFDataRef;
 #endif
 
@@ -71,7 +71,9 @@ const PlatformFileHandle invalidPlatformFileHandle = -1;
 #endif
 
 // PlatformFileID
-#if OS(WINDOWS)
+#if USE(GLIB) && !OS(WINDOWS) && !PLATFORM(QT)
+typedef CString PlatformFileID;
+#elif OS(WINDOWS)
 typedef FILE_ID_128 PlatformFileID;
 #else
 typedef ino_t PlatformFileID;
@@ -208,6 +210,10 @@ WTF_EXPORT_PRIVATE CString currentExecutablePath();
 WTF_EXPORT_PRIVATE CString currentExecutableName();
 WTF_EXPORT_PRIVATE String userCacheDirectory();
 WTF_EXPORT_PRIVATE String userDataDirectory();
+#endif
+
+#if PLATFORM(QT)
+uint64_t getVolumeFreeSizeForPath(const char*);
 #endif
 
 #if OS(WINDOWS)

@@ -195,7 +195,7 @@ void EventDispatcher::wheelEvent(PageIdentifier pageID, const WebWheelEvent& whe
     internalWheelEvent(pageID, wheelEvent, rubberBandableEdges, WheelEventOrigin::UIProcess);
 }
 
-#if ENABLE(MAC_GESTURE_EVENTS)
+#if ENABLE(MAC_GESTURE_EVENTS) || ENABLE(QT_GESTURE_EVENTS)
 void EventDispatcher::gestureEvent(PageIdentifier pageID, const WebKit::WebGestureEvent& gestureEvent, CompletionHandler<void(std::optional<WebEventType>, bool)>&& completionHandler)
 {
     RunLoop::main().dispatch([this, pageID, gestureEvent, completionHandler = WTFMove(completionHandler)] () mutable {
@@ -280,7 +280,7 @@ void EventDispatcher::dispatchWheelEvent(PageIdentifier pageID, const WebWheelEv
         sendDidReceiveEvent(pageID, wheelEvent.type(), handled);
 }
 
-#if ENABLE(MAC_GESTURE_EVENTS)
+#if ENABLE(MAC_GESTURE_EVENTS) || ENABLE(QT_GESTURE_EVENTS)
 void EventDispatcher::dispatchGestureEvent(PageIdentifier pageID, const WebGestureEvent& gestureEvent, CompletionHandler<void(std::optional<WebEventType>, bool)>&& completionHandler)
 {
     ASSERT(RunLoop::isMain());

@@ -39,6 +39,12 @@ typedef const struct __CFURL* CFURLRef;
 OBJC_CLASS NSURL;
 #endif
 
+#if PLATFORM(QT)
+QT_BEGIN_NAMESPACE
+class QUrl;
+QT_END_NAMESPACE
+#endif
+
 namespace WTF {
 
 class PrintStream;
@@ -234,6 +240,11 @@ public:
 #if USE(GLIB) && HAVE(GURI)
     WTF_EXPORT_PRIVATE URL(GUri*);
     WTF_EXPORT_PRIVATE GRefPtr<GUri> createGUri() const;
+#endif
+
+#if PLATFORM(QT)
+    URL(const QUrl&);
+    operator QUrl() const;
 #endif
 
 #ifndef NDEBUG

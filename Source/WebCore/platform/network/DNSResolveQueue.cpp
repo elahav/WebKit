@@ -31,6 +31,8 @@
 #include "DNSResolveQueueGLib.h"
 #elif USE(CURL)
 #include "DNSResolveQueueCurl.h"
+#elif PLATFORM(QT)
+#include "DNSResolveQueueQt.h"
 #elif USE(CF)
 #include "DNSResolveQueueCFNet.h"
 #endif

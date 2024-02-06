@@ -43,6 +43,10 @@ typedef union _GdkEvent GdkEvent;
 #endif
 #endif
 
+#if PLATFORM(QT)
+#include <qevent.h>
+#endif
+
 #if PLATFORM(WPE) && ENABLE(WPE_PLATFORM)
 typedef struct _WPEEvent WPEEvent;
 #endif
@@ -61,6 +65,8 @@ class NativeWebWheelEvent : public WebWheelEvent {
 public:
 #if USE(APPKIT)
     NativeWebWheelEvent(NSEvent *, NSView *);
+#elif PLATFORM(QT)
+    explicit NativeWebWheelEvent(QWheelEvent*, const QTransform& fromItemTransform);
 #elif PLATFORM(GTK)
     NativeWebWheelEvent(const NativeWebWheelEvent&);
     NativeWebWheelEvent(GdkEvent*, const WebCore::IntPoint& position, const WebCore::IntPoint& globalPosition, const WebCore::FloatSize& delta, const WebCore::FloatSize& wheelTicks, WebWheelEvent::Phase, WebWheelEvent::Phase momentumPhase, bool hasPreciseDeltas = false);
@@ -76,6 +82,8 @@ public:
 
 #if USE(APPKIT)
     NSEvent* nativeEvent() const { return m_nativeEvent.get(); }
+#elif PLATFORM(QT)
+    const QWheelEvent* nativeEvent() const { return m_nativeEvent; }
 #elif PLATFORM(GTK)
     GdkEvent* nativeEvent() const { return m_nativeEvent.get(); }
 #elif PLATFORM(WIN)
@@ -87,6 +95,8 @@ public:
 private:
 #if USE(APPKIT)
     RetainPtr<NSEvent> m_nativeEvent;
+#elif PLATFORM(QT)
+    QWheelEvent* m_nativeEvent;
 #elif PLATFORM(GTK) && USE(GTK4)
     GRefPtr<GdkEvent> m_nativeEvent;
 #elif PLATFORM(GTK)

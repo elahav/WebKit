@@ -71,6 +71,10 @@ OBJC_CLASS NSHTTPCookie;
 OBJC_CLASS NSMutableSet;
 #endif
 
+#if PLATFORM(QT)
+#include "ThirdPartyCookiesQt.h"
+#endif
+
 namespace WebCore {
 
 class CurlProxySettings;
@@ -160,6 +164,16 @@ public:
     WEBCORE_EXPORT void setProxySettings(const CurlProxySettings&);
 
     WEBCORE_EXPORT void clearAlternativeServices();
+#elif PLATFORM(QT)
+    WEBCORE_EXPORT NetworkStorageSession(PAL::SessionID);
+    ~NetworkStorageSession();
+
+    QNetworkCookieJar* cookieJar() const { return m_cookieJar; }
+    void setCookieJar(QNetworkCookieJar* jar) { m_cookieJar = jar; }
+
+    ThirdPartyCookiePolicy thirdPartyCookiePolicy() const { return m_thirdPartyCookiePolicy; }
+    void setThirdPartyCookiePolicy(ThirdPartyCookiePolicy policy) { m_thirdPartyCookiePolicy = policy; }
+
 #else
     WEBCORE_EXPORT NetworkStorageSession(PAL::SessionID, NetworkingContext*);
     ~NetworkStorageSession();
@@ -283,6 +297,9 @@ private:
     Function<void ()> m_cookieObserverHandler;
 #elif USE(CURL)
     mutable UniqueRef<CookieJarDB> m_cookieDatabase;
+#elif PLATFORM(QT)
+    QNetworkCookieJar* m_cookieJar { nullptr };
+    ThirdPartyCookiePolicy m_thirdPartyCookiePolicy { ThirdPartyCookiePolicy::Allow };
 #else
     RefPtr<NetworkingContext> m_context;
 #endif

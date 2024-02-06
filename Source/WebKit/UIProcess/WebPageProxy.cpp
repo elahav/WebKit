@@ -249,6 +249,10 @@
 #include "RemoteScrollingCoordinatorProxy.h"
 #endif
 
+#if PLATFORM(QT)
+#include "ArgumentCodersQt.h"
+#endif
+
 #ifndef NDEBUG
 #include <wtf/RefCountedLeakCounter.h>
 #endif
@@ -3779,6 +3783,19 @@ const WebPreferencesStore& WebPageProxy::preferencesStore() const
     return m_preferences->store();
 }
 
+#if ENABLE(QT_GESTURE_EVENTS)
+void WebPageProxy::handleGestureEvent(const WebGestureEvent& event)
+{
+    if (!isValid())
+        return;
+
+    m_gestureEventQueue.append(event);
+
+    m_process->responsivenessTimer().start();
+    m_process->send(Messages::EventDispatcher::GestureEvent(m_pageID, event), 0);
+}
+#endif
+
 #if ENABLE(TOUCH_EVENTS)
 
 static TrackingType mergeTrackingTypes(TrackingType a, TrackingType b)
@@ -4037,6 +4054,14 @@ void WebPageProxy::handleUnpreventableTouchEvent(const NativeWebTouchEvent& even
 }
 
 #elif ENABLE(TOUCH_EVENTS)
+
+#if PLATFORM(QT)
+void WebPageProxy::handlePotentialActivation(const IntPoint& touchPoint, const IntSize& touchArea)
+{
+    m_process->send(Messages::WebPage::HighlightPotentialActivation(touchPoint, touchArea), m_pageID);
+}
+#endif
+
 void WebPageProxy::touchEventHandlingCompleted(std::optional<WebEventType> eventType, bool handled)
 {
     MESSAGE_CHECK(m_process, !internals().touchEventQueue.isEmpty());
@@ -9049,6 +9074,9 @@ void WebPageProxy::didReceiveEvent(WebEventType eventType, bool handled)
     case WebEventType::KeyUp:
     case WebEventType::RawKeyDown:
     case WebEventType::Char:
+#if ENABLE(QT_GESTURE_EVENTS)
+        case WebEventType::GestureSingleTap:
+#endif
 #if ENABLE(TOUCH_EVENTS)
     case WebEventType::TouchStart:
     case WebEventType::TouchMove:
@@ -9065,6 +9093,16 @@ void WebPageProxy::didReceiveEvent(WebEventType eventType, bool handled)
     }
 
     switch (eventType) {
+#if ENABLE(QT_GESTURE_EVENTS)
+    case WebEventType::GestureSingleTap: {
+        WebGestureEvent event = m_gestureEventQueue.first();
+        MESSAGE_CHECK(type == event.type());
+            
+        m_gestureEventQueue.removeFirst();
+        m_pageClient.doneWithGestureEvent(event, handled);
+        break;
+    }
+#endif
     case WebEventType::MouseForceChanged:
     case WebEventType::MouseForceDown:
     case WebEventType::MouseForceUp:
@@ -9700,6 +9738,9 @@ void WebPageProxy::resetStateAfterProcessExited(ProcessTerminationReason termina
 
     m_pendingLearnOrIgnoreWordMessageCount = 0;
 
+#if ENABLE(QT_GESTURE_EVENTS)
+    m_gestureEventQueue.clear();
+#endif
     if (m_wheelEventCoalescer)
         m_wheelEventCoalescer->clear();
 
@@ -11029,13 +11070,14 @@ RefPtr<ViewSnapshot> WebPageProxy::takeViewSnapshot(std::optional<WebCore::IntRe
 
 #endif
 
-#if PLATFORM(GTK) || PLATFORM(WPE)
+#if PLATFORM(GTK) || PLATFORM(WPE) || PLATFORM(QT)
 
 void WebPageProxy::cancelComposition(const String& compositionString)
 {
     if (!hasRunningProcess())
         return;
 
+#if !PLATFORM(QT)
     // Remove any pending composition key event.
     if (internals().keyEventQueue.size() > 1) {
         auto event = internals().keyEventQueue.takeFirst();
@@ -11044,6 +11086,7 @@ void WebPageProxy::cancelComposition(const String& compositionString)
         });
         internals().keyEventQueue.prepend(WTFMove(event));
     }
+#endif
     send(Messages::WebPage::CancelComposition(compositionString));
 }
 
@@ -11055,7 +11098,18 @@ void WebPageProxy::deleteSurrounding(int64_t offset, unsigned characterCount)
     send(Messages::WebPage::DeleteSurrounding(offset, characterCount));
 }
 
-#endif // PLATFORM(GTK) || PLATFORM(WPE)
+#endif // PLATFORM(GTK) || PLATFORM(WPE) || PLATFORM(QT)
+    
+#if PLATFORM(QT)
+    // QTFIXME: other ports removed this
+    void WebPageProxy::setComposition(const String& text, const Vector<CompositionUnderline>& underlines, const EditingRange& selectionRange)
+    {
+        if (!hasRunningProcess())
+            return;
+        
+        send(Messages::WebPage::SetComposition(text, underlines, selectionRange));
+    }
+#endif
 
 void WebPageProxy::setScrollPinningBehavior(ScrollPinningBehavior pinning)
 {

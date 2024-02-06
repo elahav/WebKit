@@ -172,7 +172,7 @@ void Connection::platformOpen()
         mach_port_guard(mach_task_self(), m_receivePort, reinterpret_cast<mach_port_context_t>(this), true);
 #endif
 
-#if PLATFORM(MAC)
+#if PLATFORM(MAC) || (PLATFORM(QT) && USE(MACH_PORTS))
         mach_port_set_attributes(mach_task_self(), m_receivePort, MACH_PORT_DENAP_RECEIVER, (mach_port_info_t)0, 0);
 #endif
 
@@ -247,7 +247,9 @@ bool Connection::sendMessage(std::unique_ptr<MachMessage> message)
     default:
         auto messageName = message->messageName();
         auto errorMessage = makeString("Unhandled error code 0x", hex(kr), ", message '", description(messageName), "' (", messageName, ')');
+#if !PLATFORM(QT)
         WebKit::logAndSetCrashLogMessage(errorMessage.utf8().data());
+#endif
         CRASH_WITH_INFO(kr, WTF::enumToUnderlyingType(messageName));
     }
 }
@@ -476,9 +478,11 @@ static mach_msg_header_t* readFromMachPort(mach_port_t machPort, ReceiveBuffer& 
     }
 
     if (kr != MACH_MSG_SUCCESS) {
+#if !PLATFORM(QT)
 #if ASSERT_ENABLED
         auto errorMessage = makeString("Unhandled error code 0x", hex(kr), " from mach_msg, receive port is 0x", hex(machPort));
         WebKit::logAndSetCrashLogMessage(errorMessage.utf8().data());
+#endif
 #endif
         ASSERT_NOT_REACHED();
         return nullptr;
@@ -514,7 +518,7 @@ void Connection::receiveSourceEventHandler()
     if (!decoder)
         return;
 
-#if PLATFORM(MAC)
+#if PLATFORM(MAC) || (PLATFORM(QT) && USE(MACH_PORTS))
     decoder->setImportanceAssertion(ImportanceAssertion { header });
 #endif
 

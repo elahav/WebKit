@@ -1573,6 +1573,8 @@ if (NOT "${PORT}" STREQUAL "Mac")
     endif ()
 endif ()
 
+QT_ADD_EXTRA_WEBKIT_TARGET_EXPORT(JavaScriptCore)
+
 # Force staging of shared scripts, even if they aren't directly used to build JavaScriptCore.
 
 add_custom_target(JavaScriptCoreSharedScripts DEPENDS ${JavaScriptCore_SCRIPTS})

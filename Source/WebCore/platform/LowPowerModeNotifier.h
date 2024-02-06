@@ -32,7 +32,7 @@
 OBJC_CLASS WebLowPowerModeObserver;
 #endif
 
-#if USE(GLIB)
+#if USE(GLIB) && !PLATFORM(QT)
 #include <wtf/glib/GRefPtr.h>
 typedef struct _GPowerProfileMonitor GPowerProfileMonitor;
 #endif
@@ -55,7 +55,7 @@ private:
 
     RetainPtr<WebLowPowerModeObserver> m_observer;
     LowPowerModeChangeCallback m_callback;
-#elif USE(GLIB)
+#elif USE(GLIB) && !PLATFORM(QT)
 #if GLIB_CHECK_VERSION(2, 69, 1)
     LowPowerModeChangeCallback m_callback;
     GRefPtr<GPowerProfileMonitor> m_powerProfileMonitor;

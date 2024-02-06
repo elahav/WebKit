@@ -231,7 +231,7 @@ std::optional<uint32_t> volumeFileBlockSize(const String& path)
     return std::nullopt;
 }
 
-#if !USE(CF)
+#if !USE(CF) || PLATFORM(QT)
 String stringFromFileSystemRepresentation(const char* path)
 {
     if (!path)

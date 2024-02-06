@@ -39,6 +39,10 @@ typedef struct CGImage *CGImageRef;
 #elif PLATFORM(MAC)
 #include <wtf/RetainPtr.h>
 OBJC_CLASS NSImage;
+#elif PLATFORM(QT)
+QT_BEGIN_NAMESPACE
+class QImage;
+QT_END_NAMESPACE
 #elif PLATFORM(WIN)
 typedef struct HBITMAP__* HBITMAP;
 #elif USE(CAIRO)
@@ -57,6 +61,8 @@ class Node;
 typedef RetainPtr<CGImageRef> DragImageRef;
 #elif PLATFORM(MAC)
 typedef RetainPtr<NSImage> DragImageRef;
+#elif PLATFORM(QT)
+typedef QImage DragImageRef;
 #elif PLATFORM(WIN)
 typedef HBITMAP DragImageRef;
 #elif USE(CAIRO)
@@ -115,7 +121,12 @@ public:
     bool hasVisiblePath() const { return !!m_visiblePath; }
     const std::optional<Path>& visiblePath() const { return m_visiblePath; }
 
+#if PLATFORM(QT)
+    explicit operator bool() const { return !m_dragImageRef.isNull(); }
+#else
     explicit operator bool() const { return !!m_dragImageRef; }
+#endif
+
     DragImageRef get() const { return m_dragImageRef; }
 
 private:

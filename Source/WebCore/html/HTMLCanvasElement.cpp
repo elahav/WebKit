@@ -77,6 +77,10 @@
 #include <wtf/RAMSize.h>
 #include <wtf/text/StringBuilder.h>
 
+#if PLATFORM(QT)
+#include "QWebPageClient.h"
+#endif
+
 #if ENABLE(MEDIA_STREAM)
 #include "CanvasCaptureMediaStreamTrack.h"
 #include "MediaStream.h"
@@ -373,7 +377,7 @@ CanvasRenderingContext2D* HTMLCanvasElement::getContext2d(const String& type, Ca
 
 static bool requiresAcceleratedCompositingForWebGL()
 {
-#if PLATFORM(GTK) || PLATFORM(WIN)
+#if PLATFORM(GTK) || PLATFORM(WIN) || PLATFORM(QT)
     return false;
 #else
     return true;

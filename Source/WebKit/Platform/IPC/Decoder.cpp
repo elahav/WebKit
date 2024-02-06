@@ -130,7 +130,7 @@ bool Decoder::hasSyncMessageDeserializationFailure() const
 }
 #endif
 
-#if PLATFORM(MAC)
+#if PLATFORM(MAC) || (PLATFORM(QT) && USE(MACH_PORTS))
 void Decoder::setImportanceAssertion(ImportanceAssertion&& assertion)
 {
     m_importanceAssertion = WTFMove(assertion);

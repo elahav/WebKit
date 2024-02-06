@@ -60,7 +60,7 @@ void ConcurrentWorkQueue::dispatch(Function<void()>&& function)
     WorkQueueBase::dispatch(WTFMove(function));
 }
 
-#if !PLATFORM(COCOA)
+#if !PLATFORM(COCOA) && !(PLATFORM(QT) && USE(MACH_PORTS))
 void WorkQueueBase::dispatchSync(Function<void()>&& function)
 {
     BinarySemaphore semaphore;

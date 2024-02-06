@@ -25,7 +25,7 @@
 
 #pragma once
 
-#if PLATFORM(MAC)
+#if PLATFORM(MAC) || (PLATFORM(QT) && USE(MACH_PORTS))
 
 #if USE(APPLE_INTERNAL_SDK)
 
@@ -40,4 +40,4 @@ typedef enum {
 
 #endif
 
-#endif // PLATFORM(MAC)
+#endif // PLATFORM(MAC) || (PLATFORM(QT) && USE(MACH_PORTS))

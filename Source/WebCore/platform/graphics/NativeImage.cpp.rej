@@ -1,0 +1,45 @@
+--- Source/WebCore/platform/graphics/NativeImage.cpp
++++ Source/WebCore/platform/graphics/NativeImage.cpp
+@@ -31,8 +31,13 @@ namespace WebCore {
+ #if !USE(CG)
+ RefPtr<NativeImage> NativeImage::create(PlatformImagePtr&& platformImage, RenderingResourceIdentifier renderingResourceIdentifier)
+ {
++#if PLATFORM(QT)
++    if (platformImage.isNull())
++#else
+     if (!platformImage)
++#endif
+         return nullptr;
++
+     return adoptRef(*new NativeImage(WTFMove(platformImage), renderingResourceIdentifier));
+ }
+ 
+@@ -44,15 +49,27 @@ RefPtr<NativeImage> NativeImage::createTransient(PlatformImagePtr&& image, Rende
+ 
+ NativeImage::NativeImage(PlatformImagePtr&& platformImage, RenderingResourceIdentifier renderingResourceIdentifier)
+     : RenderingResource(renderingResourceIdentifier)
++#if PLATFORM(QT)
++    , m_platformImage(platformImage)
++#else
+     , m_platformImage(WTFMove(platformImage))
++#endif
+ {
++#if PLATFORM(QT)
++    ASSERT(!m_platformImage.isNull());
++#else
+     ASSERT(m_platformImage);
++#endif
+ }
+-
++    
+ void NativeImage::setPlatformImage(PlatformImagePtr&& platformImage)
+ {
++#if PLATFORM(QT)
++    m_platformImage = QImage(platformImage);
++#else
+     ASSERT(platformImage);
+     m_platformImage = WTFMove(platformImage);
++#endif
+ }
+ 
+ } // namespace WebCore

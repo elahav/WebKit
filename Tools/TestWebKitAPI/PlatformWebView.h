@@ -49,6 +49,13 @@ typedef NSWindow *PlatformWindow;
 #elif PLATFORM(GTK)
 typedef WKViewRef PlatformWKView;
 typedef GtkWidget *PlatformWindow;
+#elif PLATFORM(QT)
+QT_BEGIN_NAMESPACE
+class QQuickView;
+QT_END_NAMESPACE
+class QQuickWebView;
+typedef QQuickWebView* PlatformWKView;
+typedef QQuickView* PlatformWindow;
 #elif PLATFORM(WPE)
 namespace WPEToolingBackends {
 class HeadlessViewBackend;

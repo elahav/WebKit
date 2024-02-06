@@ -48,7 +48,12 @@ public:
     PlatformImagePtr image() const
     {
         if (!m_image)
+#if PLATFORM(QT)
+            return QImage();
+#else
             return nullptr;
+#endif
+
         return m_image->image().nativeImage()->platformImage();
     }
     void dropImage() { m_image = nullptr; }
@@ -223,12 +228,25 @@ PlatformImagePtr ImageDecoderGStreamer::createFrameImageAtIndex(size_t index, Su
 
     auto* sampleData = sampleAtIndex(index);
     if (!sampleData)
+#if PLATFORM(QT)
+        return QImage();
+#else
         return nullptr;
+#endif
 
-    if (auto image = sampleData->image())
+    auto image = sampleData->image();
+#if PLATFORM(QT)
+    if (image.isNull())
+#else
+    if (image)
+#endif
         return image;
 
+#if PLATFORM(QT)
+    return QImage();
+#else
     return nullptr;
+#endif
 }
 
 void ImageDecoderGStreamer::setData(const FragmentedSharedBuffer& data, bool)

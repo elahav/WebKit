@@ -232,7 +232,7 @@ ALWAYS_EXCLUDED_PATTERNS = ('*.a',)
 MINIFIED_EXCLUDED_PATTERNS = (*ALWAYS_EXCLUDED_PATTERNS, '*.dSYM', 'DerivedSources')
 
 def archiveBuiltProduct(configuration, platform, fullPlatform, minify=False):
-    assert platform in ('gtk', 'ios', 'jsc-only', 'mac', 'tvos', 'watchos', 'win', 'wincairo', 'wpe')
+    assert platform in ('gtk', 'qt', 'ios', 'jsc-only', 'mac', 'tvos', 'watchos', 'win', 'wincairo', 'wpe')
     global _configurationBuildDirectory
 
     print("Archiving built product from directory: %s" % _configurationBuildDirectory)
@@ -274,8 +274,8 @@ def archiveBuiltProduct(configuration, platform, fullPlatform, minify=False):
 
         shutil.rmtree(thinDirectory)
 
-    elif platform in ('gtk', 'jsc-only', 'wpe'):
-        # On GTK+/WPE/JSC we don't need the intermediate step of creating a thinDirectory
+    elif platform in ('gtk', 'jsc-only', 'wpe', 'qt'):
+        # On GTK+/WPE/JSC/Qt we don't need the intermediate step of creating a thinDirectory
         # to be compressed in a ZIP file, because we can create the ZIP directly.
         # This is faster and requires less disk resources.
         contents = ['bin',]
@@ -344,7 +344,7 @@ def unzipArchive(directoryToExtractTo, configuration):
 
 
 def extractBuiltProduct(configuration, platform):
-    assert platform in ('gtk', 'ios', 'jsc-only', 'mac', 'tvos', 'watchos', 'win', 'wincairo', 'wpe')
+    assert platform in ('gtk', 'qt', 'ios', 'jsc-only', 'mac', 'tvos', 'watchos', 'win', 'wincairo', 'wpe')
 
     archiveFile = os.path.join(_topLevelBuildDirectory, configuration + '.zip')
 
@@ -353,7 +353,7 @@ def extractBuiltProduct(configuration, platform):
 
     if platform in ('mac', 'ios', 'tvos', 'watchos'):
         return unzipArchive(_topLevelBuildDirectory, configuration)
-    elif platform in ('gtk', 'jsc-only', 'win', 'wincairo', 'wpe'):
+    elif platform in ('gtk', 'qt', 'jsc-only', 'win', 'wincairo', 'wpe'):
         print('Extracting: {}'.format(_configurationBuildDirectory))
         if unzipArchive(_configurationBuildDirectory, configuration):
             return 1

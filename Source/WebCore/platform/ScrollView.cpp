@@ -288,7 +288,7 @@ IntSize ScrollView::sizeForVisibleContent(VisibleContentRectIncludesScrollbars s
     if (platformWidget())
         return platformVisibleContentSizeIncludingObscuredArea(scrollbarInclusion == IncludeScrollbars);
 
-#if USE(COORDINATED_GRAPHICS)
+#if USE(COORDINATED_GRAPHICS) || PLATFORM(QT)
     if (m_useFixedLayout && !m_fixedVisibleContentRect.isEmpty())
         return m_fixedVisibleContentRect.size();
 #endif
@@ -307,7 +307,7 @@ IntSize ScrollView::sizeForUnobscuredContent(VisibleContentRectIncludesScrollbar
 
     IntSize visibleContentSize = sizeForVisibleContent(scrollbarInclusion);
 
-#if USE(COORDINATED_GRAPHICS)
+#if USE(COORDINATED_GRAPHICS) || PLATFORM(QT)
     if (m_useFixedLayout && !m_fixedVisibleContentRect.isEmpty())
         return visibleContentSize;
 #endif
@@ -333,7 +333,7 @@ IntRect ScrollView::visibleContentRectInternal(VisibleContentRectIncludesScrollb
     if (platformWidget())
         return platformVisibleContentRect(scrollbarInclusion == IncludeScrollbars);
 
-#if USE(COORDINATED_GRAPHICS)
+#if USE(COORDINATED_GRAPHICS) || PLATFORM(QT)
     if (m_useFixedLayout && !m_fixedVisibleContentRect.isEmpty())
         return m_fixedVisibleContentRect;
 #endif
@@ -1640,7 +1640,7 @@ String ScrollView::debugDescription() const
     return makeString("ScrollView 0x", hex(reinterpret_cast<uintptr_t>(this), Lowercase));
 }
 
-#if !PLATFORM(COCOA)
+#if !PLATFORM(COCOA) && !PLATFORM(QT)
 
 void ScrollView::platformAddChild(Widget*)
 {
@@ -1649,6 +1649,10 @@ void ScrollView::platformAddChild(Widget*)
 void ScrollView::platformRemoveChild(Widget*)
 {
 }
+
+#endif
+
+#if !PLATFORM(COCOA)
 
 void ScrollView::platformSetScrollbarsSuppressed(bool)
 {

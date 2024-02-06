@@ -740,6 +740,11 @@ private:
     std::unique_ptr<EventSenderProxy> m_eventSenderProxy;
     WKRetainPtr<WKWebsiteDataStoreRef> m_websiteDataStore;
 
+#if PLATFORM(QT)
+    class RunLoopQt;
+    RunLoopQt* m_runLoop;
+#endif
+
     WorkQueueManager m_workQueueManager;
 
     struct AbandonedDocumentInfo {

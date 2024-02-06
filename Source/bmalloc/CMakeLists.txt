@@ -693,7 +693,7 @@ set_source_files_properties(
     libpas/src/libpas/bmalloc_heap_config.c
     libpas/src/libpas/pas_heap_config_kind.c
     libpas/src/libpas/pas_segregated_page_config_kind.c
-    PROPERTIES COMPILE_OPTIONS "${COMPILE_C_AS_CXX}"
+    PROPERTIES COMPILE_OPTIONS "${COMPILE_C_AS_CXX}" LANGUAGE CXX
 )
 
 WEBKIT_FRAMEWORK_DECLARE(bmalloc)
@@ -706,6 +706,8 @@ WEBKIT_COPY_FILES(bmalloc_CopyHeaders
 )
 
 WEBKIT_FRAMEWORK(bmalloc)
+
+QT_ADD_EXTRA_WEBKIT_TARGET_EXPORT(bmalloc)
 
 WEBKIT_ADD_TARGET_CXX_FLAGS(bmalloc
     -Wno-missing-field-initializers

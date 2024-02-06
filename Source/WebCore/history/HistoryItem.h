@@ -48,6 +48,12 @@
 typedef struct objc_object* id;
 #endif
 
+#if PLATFORM(QT)
+#include <QVariant>
+#include <QByteArray>
+#include <QDataStream>
+#endif
+
 namespace WebCore {
 
 class CachedPage;
@@ -159,6 +165,11 @@ public:
 #if PLATFORM(COCOA)
     WEBCORE_EXPORT id viewState() const;
     WEBCORE_EXPORT void setViewState(id);
+#endif
+
+#if PLATFORM(QT)
+    QVariant userData() const { return m_userData; }
+    void setUserData(const QVariant& userData) { m_userData = userData; }
 #endif
 
 #ifndef NDEBUG
@@ -281,6 +292,10 @@ private:
     BackForwardItemIdentifier m_identifier;
     std::optional<PolicyContainer> m_policyContainer;
     Ref<Client> m_client;
+
+#if PLATFORM(QT)
+    QVariant m_userData;
+#endif
 };
 
 } // namespace WebCore

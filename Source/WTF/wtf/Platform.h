@@ -157,6 +157,31 @@
 #define USE_LIBWEBRTC 1
 #endif
 
+/* FIXME: This should be in a different file */
+#if PLATFORM(QT)
+#ifdef __cplusplus
+#define Q_FORWARD_DECLARE_OBJC_CLASS(classname) OBJC_CLASS classname
+#include <qglobal.h>
+
+#if QT_VERSION >= QT_VERSION_CHECK(5,8,0)
+#include <QtGui/qtguiglobal.h>
+#endif // QT_VERSION >= QT_VERSION_CHECK(5,8,0)
+
+#include <QtNetwork/qtnetwork-config.h>
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0) || !QT_CONFIG(bearermanagement)
+#ifndef QT_NO_BEARERMANAGEMENT
+#define QT_NO_BEARERMANAGEMENT
+#endif // QT_NO_BEARERMANAGEMENT
+#endif // !QT_CONFIG(bearermanagement)
+
+#endif // ifdef __cplusplus
+
+#if defined(QT_OPENGL_ES_2) && !defined(USE_OPENGL_ES_2)
+#define USE_OPENGL_ES_2 1
+#endif // defined(QT_OPENGL_ES_2) && !defined(USE_OPENGL_ES_2)
+
+#endif // PLATFORM(QT)
+
 /* FIXME: This is used to "turn on a specific feature of WebKit", so should be converted to an ENABLE macro. */
 #if PLATFORM(COCOA) || PLATFORM(GTK) || PLATFORM(WPE)
 #define USE_ACCESSIBILITY_CONTEXT_MENUS 1
