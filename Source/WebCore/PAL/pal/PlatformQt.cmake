@@ -29,12 +29,6 @@ if (USE_GCRYPT)
     )
 endif ()
 
-if (APPLE AND ENABLE_WEB_CRYPTO)
-    list(APPEND PAL_PUBLIC_HEADERS
-        spi/cocoa/CommonCryptoSPI.h
-    )
-endif ()
-
 if (USE_GLIB)
     list(APPEND PAL_SOURCES
         system/glib/SleepDisablerGLib.cpp
