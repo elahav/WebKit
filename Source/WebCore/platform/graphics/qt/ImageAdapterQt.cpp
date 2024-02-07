@@ -30,7 +30,7 @@
  */
 
 #include "config.h"
-#include "Image.h"
+#include "ImageAdapter.h"
 
 #include "BitmapImage.h"
 #include "GraphicsContext.h"
@@ -105,7 +105,7 @@ static QImage loadResourcePixmap(const char* name)
 
 namespace WebCore {
 
-Ref<Image> Image::loadPlatformResource(const char* name)
+Ref<Image> ImageAdapter::loadPlatformResource(const char* name)
 {
     return StillImage::create(loadResourcePixmap(name));
 }
@@ -118,7 +118,7 @@ void Image::setPlatformResource(const char* name, const QImage& pixmap)
         graphics().add(name, WebGraphicVector { pixmap });
 }
 
-void BitmapImage::invalidatePlatformData()
+void ImageAdapter::invalidate()
 {
 }
 

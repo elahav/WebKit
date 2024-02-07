@@ -185,7 +185,7 @@ void QWebSettingsPrivate::apply()
                                  global->attributes.value(QWebSettings::HyperlinkAuditingEnabled));
 
         settings->setHyperlinkAuditingEnabled(value);
- 
+
         value = attributes.value(QWebSettings::JavascriptCanOpenWindows,
                                       global->attributes.value(QWebSettings::JavascriptCanOpenWindows));
         settings->setJavaScriptCanOpenWindowsAutomatically(value);
@@ -466,8 +466,8 @@ QWebSettings* QWebSettings::globalSettings()
     \value TiledBackingStoreEnabled This setting enables the tiled backing store feature
         for a QGraphicsWebView. With the tiled backing store enabled, the web page contents in and around
         the current visible area is speculatively cached to bitmap tiles. The tiles are automatically kept
-        in sync with the web page as it changes. Enabling tiling can significantly speed up painting heavy 
-        operations like scrolling. Enabling the feature increases memory consumption. It does not work well 
+        in sync with the web page as it changes. Enabling tiling can significantly speed up painting heavy
+        operations like scrolling. Enabling the feature increases memory consumption. It does not work well
         with contents using CSS fixed positioning (see also \l{QGraphicsWebView::}{resizesToContents} property).
         \l{QGraphicsWebView::}{tiledBackingStoreFrozen} property allows application to temporarily
         freeze the contents of the backing store. This is disabled by default.
@@ -845,7 +845,7 @@ void QWebSettings::setWebGraphic(WebGraphic type, const QPixmap& graphic)
 QPixmap QWebSettings::webGraphic(WebGraphic type)
 {
     WebCore::initializeWebCoreQt();
-    RefPtr<WebCore::Image> img = WebCore::Image::loadPlatformResource(resourceNameForWebGraphic(type));
+    RefPtr<WebCore::Image> img = WebCore::ImageAdapter::loadPlatformResource(resourceNameForWebGraphic(type));
     if (!img)
         return QPixmap();
     return QPixmap::fromImage(img->nativeImageForCurrentFrame()->platformImage());
@@ -936,9 +936,9 @@ QWebSettings::ThirdPartyCookiePolicy QWebSettings::thirdPartyCookiePolicy() cons
 
 /*!
     Sets the CSS media type to \a type.
-    
+
     Setting this will override the normal value of the CSS media property.
-    
+
     \note Setting the value to null QString will restore the default value.
 */
 void QWebSettings::setCSSMediaType(const QString& type)
@@ -949,7 +949,7 @@ void QWebSettings::setCSSMediaType(const QString& type)
 
 /*!
     Returns the current CSS media type.
-    
+
     \note It will only return the value set through setCSSMediaType and not the one used internally.
 */
 QString QWebSettings::cssMediaType() const
@@ -1185,12 +1185,12 @@ qint64 QWebSettings::offlineWebApplicationCacheQuota()
     \since 4.6
 
     Sets the path for HTML5 local storage to \a path.
-    
+
     For more information on HTML5 local storage see the
     \l{http://www.w3.org/TR/webstorage/#the-localstorage-attribute}{Web Storage standard}.
-    
+
     Support for local storage can enabled by setting the
-    \l{QWebSettings::LocalStorageEnabled}{LocalStorageEnabled} attribute.     
+    \l{QWebSettings::LocalStorageEnabled}{LocalStorageEnabled} attribute.
 
     \sa localStoragePath()
 */
@@ -1217,7 +1217,7 @@ QString QWebSettings::localStoragePath() const
 
     Enables WebKit data persistence and sets the path to \a path.
     If \a path is empty, the user-specific data location specified by
-    \l{QDesktopServices::AppLocalDataLocation}{AppLocalDataLocation} 
+    \l{QDesktopServices::AppLocalDataLocation}{AppLocalDataLocation}
     will be used instead.
 
     This method will simultaneously set and enable the iconDatabasePath(),
