@@ -997,7 +997,7 @@ void GraphicsContextQt::fillRect(const FloatRect& rect, const Color& color)
     p->fillRect(platformRect, QColor(color));
 }
 
-void GraphicsContextQt::fillRect(const FloatRect& rect, Gradient& gradient)
+void GraphicsContextQt::fillRect(const FloatRect& rect, Gradient& gradient, const AffineTransform& gradientSpaceTransform)
 {
     QRectF platformRect(rect);
     QPainter* p = m_data->p();
