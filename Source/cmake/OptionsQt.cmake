@@ -498,6 +498,10 @@ find_package(ATSPI 2.5.3)
 SET_AND_EXPOSE_TO_BUILD(USE_ATSPI 1)
 add_definitions(-DGETTEXT_PACKAGE="WebKitQt")
 
+# FIXME: Should be able to choose openssl instead.
+find_package(LibGcrypt 1.7.0 REQUIRED)
+SET_AND_EXPOSE_TO_BUILD(USE_GCRYPT 1)
+
 set(QT_REQUIRED_COMPONENTS Core Gui Network)
 
 # FIXME: Allow building w/o these components
