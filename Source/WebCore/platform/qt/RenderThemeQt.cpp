@@ -205,7 +205,7 @@ void RenderThemeQt::computeControlRect(QStyleFacade::ButtonType, FloatRect&) con
 {
 }
 
-void RenderThemeQt::adjustRepaintRect(const RenderObject& o, FloatRect& rect)
+void RenderThemeQt::adjustRepaintRect(const RenderBox& o, FloatRect& rect)
 {
     switch (o.style().effectiveAppearance()) {
     case StyleAppearance::Checkbox:

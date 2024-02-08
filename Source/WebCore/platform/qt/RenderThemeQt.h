@@ -67,7 +67,7 @@ public:
     // A general method asking if any control tinting is supported at all.
     bool supportsControlTints() const override;
 
-    void adjustRepaintRect(const RenderObject&, FloatRect&) override;
+    void adjustRepaintRect(const RenderBox&, FloatRect&) override;
 
     // The platform selection color.
     Color platformActiveSelectionBackgroundColor(OptionSet<StyleColorOptions>) const override;
