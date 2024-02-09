@@ -11,6 +11,7 @@ list(APPEND WTF_SOURCES
     text/qt/StringQt.cpp
     text/qt/TextBreakIteratorInternalICUQt.cpp
 )
+
 QTWEBKIT_GENERATE_MOC_FILES_CPP(WTF qt/MainThreadQt.cpp qt/RunLoopQt.cpp)
 
 if (WIN32)
@@ -139,6 +140,13 @@ if (UNIX AND NOT APPLE)
     list(APPEND WTF_SOURCES
         unix/MemoryPressureHandlerUnix.cpp
         unix/LoggingUnix.cpp
+    )
+
+    list(APPEND WTF_PUBLIC_HEADERS
+        # FIXME: Make conditional on use of GLIB?
+        glib/GThreadSafeWeakPtr.h
+
+        unix/UnixFileDescriptor.h
     )
 
     check_function_exists(clock_gettime CLOCK_GETTIME_EXISTS)
