@@ -539,7 +539,7 @@ bool FrameLoaderClientQt::canShowMIMETypeAsHTML(const String& MIMEType) const
     notImplemented();
     return false;
 }
-    
+
 bool FrameLoaderClientQt::canShowMIMEType(const String& MIMEType) const
 {
     String type = MIMEType;
@@ -1070,7 +1070,7 @@ WebCore::LocalFrame* FrameLoaderClientQt::dispatchCreatePage(const WebCore::Navi
     return newPage->mainFrameAdapter().frame;
 }
 
-void FrameLoaderClientQt::dispatchDecidePolicyForResponse(const WebCore::ResourceResponse& response, const WebCore::ResourceRequest&, PolicyCheckIdentifier id, const String& downloadAttribute, FramePolicyFunction&& function)
+void FrameLoaderClientQt::dispatchDecidePolicyForResponse(const WebCore::ResourceResponse& response, const WebCore::ResourceRequest&, const String& downloadAttribute, FramePolicyFunction&& function)
 {
     // We need to call directly here.
     switch (response.httpStatusCode()) {
@@ -1078,19 +1078,19 @@ void FrameLoaderClientQt::dispatchDecidePolicyForResponse(const WebCore::Resourc
         // FIXME: a 205 response requires that the requester reset the document view.
         // Fallthrough
     case 204:
-        function(PolicyAction::Ignore, id);
+        function(PolicyAction::Ignore);
         return;
     }
 
     if (WebCore::contentDispositionType(response.httpHeaderField(HTTPHeaderName::ContentDisposition)) == WebCore::ContentDispositionAttachment)
-        function(PolicyAction::Download, id);
+        function(PolicyAction::Download);
     else if (canShowMIMEType(response.mimeType()))
-        function(PolicyAction::Use, id);
+        function(PolicyAction::Use);
     else
-        function(PolicyAction::Download, id);
+        function(PolicyAction::Download);
 }
 
-void FrameLoaderClientQt::dispatchDecidePolicyForNewWindowAction(const WebCore::NavigationAction& action, const WebCore::ResourceRequest& request, FormState*, const WTF::String&, PolicyCheckIdentifier id, FramePolicyFunction&& function)
+void FrameLoaderClientQt::dispatchDecidePolicyForNewWindowAction(const WebCore::NavigationAction& action, const WebCore::ResourceRequest& request, FormState*, const WTF::String&, FramePolicyFunction&& function)
 {
     Q_ASSERT(m_webFrame);
     QNetworkRequest r(request.toNetworkRequest(m_frame->loader().networkingContext()));
@@ -1102,13 +1102,13 @@ void FrameLoaderClientQt::dispatchDecidePolicyForNewWindowAction(const WebCore::
         if (action.type() == NavigationType::LinkClicked && r.url().hasFragment())
             m_frame->loader().activeDocumentLoader()->setLastCheckedRequest(ResourceRequest());
 
-        function(PolicyAction::Ignore, id);
+        function(PolicyAction::Ignore);
         return;
     }
-    function(PolicyAction::Use, id);
+    function(PolicyAction::Use);
 }
 
-void FrameLoaderClientQt::dispatchDecidePolicyForNavigationAction(const WebCore::NavigationAction& action, const WebCore::ResourceRequest& request, const ResourceResponse& redirectResponse, WebCore::FormState*, PolicyDecisionMode, PolicyCheckIdentifier id, FramePolicyFunction&& function)
+void FrameLoaderClientQt::dispatchDecidePolicyForNavigationAction(const WebCore::NavigationAction& action, const WebCore::ResourceRequest& request, const ResourceResponse& redirectResponse, WebCore::FormState*, PolicyDecisionMode id, FramePolicyFunction&& function)
 {
     Q_ASSERT(m_webFrame);
     QNetworkRequest r(request.toNetworkRequest(m_frame->loader().networkingContext()));
@@ -1133,7 +1133,7 @@ void FrameLoaderClientQt::dispatchDecidePolicyForNavigationAction(const WebCore:
             result = PolicyAction::Ignore;
 
         m_webFrame->pageAdapter->acceptNavigationRequest(m_webFrame, r, (int)action.type());
-        function(result, id);
+        function(result);
         return;
     }
 
@@ -1144,10 +1144,10 @@ void FrameLoaderClientQt::dispatchDecidePolicyForNavigationAction(const WebCore:
         if (action.type() == NavigationType::LinkClicked && r.url().hasFragment())
             m_frame->loader().activeDocumentLoader()->setLastCheckedRequest(ResourceRequest());
 
-        function(PolicyAction::Ignore, id);
+        function(PolicyAction::Ignore);
         return;
     }
-    function(PolicyAction::Use, id);
+    function(PolicyAction::Use);
 }
 
 void FrameLoaderClientQt::dispatchUnableToImplementPolicy(const WebCore::ResourceError&)
@@ -1206,7 +1206,7 @@ ObjectContentType FrameLoaderClientQt::objectContentType(const URL& url, const S
 
     if (MIMETypeRegistry::isSupportedImageMIMEType(mimeType))
         return ObjectContentType::Image;
-    
+
     if (MIMETypeRegistry::isSupportedNonImageMIMEType(mimeType))
         return ObjectContentType::Frame;
 
@@ -1246,7 +1246,7 @@ public:
     }
 
     void invalidateRect(const IntRect& r) override
-    { 
+    {
         if (platformWidget())
             widgetAdapter()->update(r);
     }
