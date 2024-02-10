@@ -682,7 +682,7 @@ bool ChromeClientQt::supportsFullScreenForElement(const Element&, bool withKeybo
     return !withKeyboard;
 }
 
-void ChromeClientQt::enterFullScreenForElement(Element& element)
+void ChromeClientQt::enterFullScreenForElement(Element& element, HTMLMediaElementEnums::VideoFullscreenMode)
 {
     m_webPage->fullScreenRequested(QWebFullScreenRequest::createEnterRequest(m_webPage, QWebElement(&element)));
 }
