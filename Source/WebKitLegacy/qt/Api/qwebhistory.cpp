@@ -53,7 +53,6 @@ static const int HistoryStreamVersion = 3;
 
   \table
   \header \li Function      \li Description
-  \row    \li title()       \li The page title.
   \row    \li url()         \li The location of the page.
   \row    \li originalUrl() \li The URL used to access the page.
   \row    \li lastVisited() \li The date and time of the user's last visit to the page.
@@ -129,8 +128,9 @@ QUrl QWebHistoryItem::url() const
 */
 QString QWebHistoryItem::title() const
 {
-    if (d->item)
-        return d->item->title();
+    // FIXME:
+    // title() was removed from HistoryItem.
+    // Can this function be removed as well?
     return QString();
 }
 
@@ -182,7 +182,7 @@ QVariant QWebHistoryItem::userData() const
   \since 4.5
 
  Stores user specific data \a userData with the history item.
- 
+
  \note All copies of this item will be modified.
 
  \sa userData()
