@@ -517,7 +517,7 @@ bool QWebPageAdapter::findText(const QString& subString, FindFlag options)
         }
     }
 
-    return page->findString(subString, webCoreFindOptions);
+    return page->findString(subString, webCoreFindOptions) != std::nullopt;
 }
 
 void QWebPageAdapter::adjustPointForClicking(QMouseEvent* ev)
