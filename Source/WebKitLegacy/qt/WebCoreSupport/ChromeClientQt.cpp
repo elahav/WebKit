@@ -48,6 +48,7 @@
 #include <WebCore/CookieConsentDecisionResult.h>
 #include <WebCore/DatabaseTracker.h>
 #include <WebCore/Document.h>
+#include <WebCore/DocumentInlines.h>
 #include <WebCore/FileChooser.h>
 #include <WebCore/FileIconLoader.h>
 #include <WebCore/FullscreenManager.h>
