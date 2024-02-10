@@ -249,7 +249,7 @@ find_package(OpenGL)
 add_library(OpenGL::GL INTERFACE IMPORTED)
 set_target_properties(OpenGL::GL PROPERTIES
   IMPORTED_LOCATION "${OPENGL_LIBRARIES}")
-        
+
 find_package(Qt6 ${REQUIRED_QT_VERSION} REQUIRED COMPONENTS Core Gui)
 message("OPENGL_FOUND: ${OPENGL_FOUND}")
 message("OPENGL_GLU_FOUND: ${OPENGL_GLU_FOUND}")
@@ -427,6 +427,7 @@ endif ()
 
 find_package(Freetype 2.4.2 REQUIRED)
 find_package(HarfBuzz 0.9.18 REQUIRED COMPONENTS ICU)
+find_package(Libtasn1 REQUIRED)
 find_package(Threads REQUIRED)
 
 if (USE_LIBJPEG)
