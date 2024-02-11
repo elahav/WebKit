@@ -30,12 +30,10 @@
 #include <QImage>
 #include <QPainter>
 #include <QtGlobal>
-#include <WebCore/BitmapImage.h>
-#include <WebCore/GraphicsContext.h>
+#include "BitmapImage.h"
+#include "GraphicsContext.h"
 
-using namespace WebCore;
-
-namespace WebKit {
+namespace WebCore {
 
 QImage ShareableBitmap::createQImage()
 {
@@ -99,7 +97,7 @@ Checked<unsigned, RecordOverflow> ShareableBitmap::calculateBytesPerRow(WebCore:
 
 unsigned ShareableBitmap::calculateBytesPerPixel(const Configuration&)
 {
-    return 4;	
+    return 4;
 }
 
 }
