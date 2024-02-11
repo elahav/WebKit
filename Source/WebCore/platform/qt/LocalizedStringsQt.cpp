@@ -36,6 +36,10 @@
 #include <wtf/MathExtras.h>
 #include <wtf/text/WTFString.h>
 
+#if USE(GLIB)
+#include <wtf/glib/GUniquePtr.h>
+#endif
+
 namespace WebCore {
 
 String inputElementAltText()
@@ -947,6 +951,20 @@ String localizedString(const char* key)
     return String::fromUTF8(key, strlen(key));
 }
 
+String formatLocalizedString(const char* format, ...)
+{
+#if USE(GLIB)
+    va_list arguments;
+    va_start(arguments, format);
+    GUniquePtr<gchar> result(g_strdup_vprintf(format, arguments));
+    va_end(arguments);
+    return String::fromUTF8(result.get());
+#else
+    notImplemented();
+    return String::fromUTF8(format);
+#endif
+}
+
 #if ENABLE(INPUT_TYPE_WEEK)
 String weekFormatInLDML()
 {
@@ -954,4 +972,24 @@ String weekFormatInLDML()
     return String();
 }
 #endif
+
+
+String AXListItemActionVerb()
+{
+    notImplemented();
+    return "select"_s;
+}
+
+String AXUncheckedCheckboxActionVerb()
+{
+    notImplemented();
+    return "check"_s;
+}
+
+String AXCheckedCheckboxActionVerb()
+{
+    notImplemented();
+    return "uncheck"_s;
+}
+
 }
