@@ -224,6 +224,12 @@ if (APPLE)
     )
 endif ()
 
+if (UNIX)
+    list(APPEND WebCore_SOURCES
+        platform/unix/SharedMemoryUnix.cpp
+    )
+endif ()
+
 QTWEBKIT_GENERATE_MOC_FILES_CPP(WebCore
     platform/network/qt/DNSResolveQueueQt.cpp
     platform/qt/MainThreadSharedTimerQt.cpp

@@ -239,8 +239,6 @@ else ()
         Platform/IPC/unix/AttachmentUnix.cpp
         Platform/IPC/unix/ConnectionUnix.cpp
 
-        Platform/unix/SharedMemoryUnix.cpp
-
         UIProcess/linux/MemoryPressureMonitor.cpp
     )
 endif ()
