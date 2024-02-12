@@ -80,4 +80,10 @@ void NativeImage::draw(GraphicsContext& context, const FloatRect& destinationRec
     context.drawNativeImageInternal(*this, destinationRect, sourceRect, options);
 }
 
+DestinationColorSpace PlatformImageNativeImageBackend::colorSpace() const
+{
+    notImplemented();
+    return DestinationColorSpace::SRGB();
+}
+
 } // namespace WebCore
