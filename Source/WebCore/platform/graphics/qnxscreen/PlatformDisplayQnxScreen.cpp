@@ -34,10 +34,13 @@
 #include <epoxy/egl.h>
 
 #include <gtk/gtk.h>
-#if USE(GTK4)
-#include <gdk/wayland/gdkwayland.h>
-#else
-#include <gdk/gdkqnxscreen.h>
+
+#if (USE_GTK4)
+// FIXME: This is a GDK private function. Wayland exports a wrapper.
+// Should qnxscreen do the same?
+extern "C" {
+    extern gpointer gdk_qnxscreen_display_get_egl_display(GdkDisplay *);
+}
 #endif
 
 namespace WebCore {
@@ -67,7 +70,11 @@ EGLDisplay PlatformDisplayQnxScreen::gtkEGLDisplay()
         return m_eglDisplayOwned ? EGL_NO_DISPLAY : m_eglDisplay;
 
 #if USE(GTK4)
-    m_eglDisplay = gdk_wayland_display_get_egl_display(m_sharedDisplay.get());
+    // FIXME:
+    // This code was copied from the wayland version, and it's not clear what it is doing and
+    // why.
+    //m_eglDisplay = gdk_qnxscreen_display_get_egl_display(m_sharedDisplay.get());
+    m_eglDisplay = EGL_NO_DISPLAY;
 #else
     auto* window = gtk_window_new(GTK_WINDOW_POPUP);
     gtk_widget_realize(window);
