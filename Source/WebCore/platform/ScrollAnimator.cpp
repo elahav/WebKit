@@ -1,11 +1,11 @@
 /*
  * Copyright (C) 2014-2015 Apple Inc.  All rights reserved.
  * Copyright (c) 2010, Google Inc. All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
  * met:
- * 
+ *
  *     * Redistributions of source code must retain the above copyright
  * notice, this list of conditions and the following disclaimer.
  *     * Redistributions in binary form must reproduce the above
@@ -15,7 +15,7 @@
  *     * Neither the name of Google Inc. nor the names of its
  * contributors may be used to endorse or promote products derived from
  * this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -243,7 +243,7 @@ void ScrollAnimator::setCurrentPosition(const FloatPoint& position, NotifyScroll
     // code in RenderLayerScrollableArea. We can early return when webkit.org/b/230454 is fixed.
     auto delta = position - m_currentPosition;
     m_currentPosition = position;
-    
+
     if (notify == NotifyScrollableArea::Yes)
         notifyPositionChanged(delta);
     else
@@ -398,7 +398,7 @@ void ScrollAnimator::removeWheelEventTestCompletionDeferralForReason(WheelEventT
 {
     if (!m_wheelEventTestMonitor)
         return;
-    
+
     m_wheelEventTestMonitor->removeDeferralForReason(identifier, reason);
 }
 
@@ -406,6 +406,14 @@ void ScrollAnimator::removeWheelEventTestCompletionDeferralForReason(WheelEventT
 bool ScrollAnimator::scrollAnimationEnabled() const
 {
     return m_scrollableArea.scrollAnimatorEnabled();
+}
+#elif PLATFORM(QT)
+bool ScrollAnimator::scrollAnimationEnabled() const
+{
+    // FIXME:
+    // Scrolling animation doesn't work right now.
+    // Return false so that non-animated wheel scrolling works.
+    return false;
 }
 #endif
 
