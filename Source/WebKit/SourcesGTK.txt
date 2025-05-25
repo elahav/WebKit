@@ -269,6 +269,7 @@ UIProcess/gtk/ClipboardGtk4.cpp @no-unify
 UIProcess/gtk/Display.cpp @no-unify
 UIProcess/gtk/DisplayX11.cpp @no-unify
 UIProcess/gtk/DisplayWayland.cpp @no-unify
+UIProcess/gtk/DisplayQNXScreen.cpp @no-unify
 UIProcess/gtk/WebDateTimePickerGtk.cpp
 UIProcess/gtk/HardwareAccelerationManager.cpp
 UIProcess/gtk/KeyBindingTranslator.cpp

@@ -92,6 +92,10 @@ GLDisplay* Display::glDisplay() const
     if (initializeGLDisplayWayland())
         return m_glDisplay.get();
 #endif
+#if PLATFORM(QNXSCREEN)
+    if (initializeGLDisplayQNXScreen())
+        return m_glDisplay.get();
+#endif
 
     return nullptr;
 }

@@ -62,6 +62,9 @@ private:
 #if PLATFORM(WAYLAND)
     bool initializeGLDisplayWayland() const;
 #endif
+#if PLATFORM(QNXSCREEN)
+    bool initializeGLDisplayQNXScreen() const;
+#endif
 
     GRefPtr<GdkDisplay> m_gdkDisplay;
     mutable std::unique_ptr<WebCore::GLDisplay> m_glDisplay;
