@@ -75,6 +75,15 @@ CString currentExecutablePath()
 {
     return { };
 }
+#elif OS(QNX)
+CString currentExecutablePath()
+{
+    static char readLinkBuffer[PATH_MAX];
+    ssize_t result = readlink("/proc/self/exefile", readLinkBuffer, PATH_MAX);
+    if (result == -1)
+        return { };
+    return CString({ readLinkBuffer, static_cast<size_t>(result) });
+}
 #elif OS(UNIX)
 CString currentExecutablePath()
 {
