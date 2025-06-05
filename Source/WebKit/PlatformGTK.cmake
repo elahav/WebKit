@@ -370,6 +370,12 @@ if (ENABLE_MEDIA_STREAM)
     )
 endif ()
 
+if (CMAKE_SYSTEM_NAME MATCHES "QNX")
+    list(APPEND WebKit_LIBRARIES
+        socket
+    )
+endif ()
+
 GENERATE_GLIB_API_HEADERS(WebKit WebKitGTK_HEADER_TEMPLATES
     ${WebKitGTK_DERIVED_SOURCES_DIR}/webkit
     WebKitGTK_INSTALLED_HEADERS
