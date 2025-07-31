@@ -375,7 +375,7 @@ if (ENABLE_WAYLAND_TARGET)
     find_package(WaylandProtocols 1.24 REQUIRED)
 endif ()
 
-if (ENABLE_WAYLAND_TARGET)
+if (ENABLE_QNXSCREEN_TARGET)
     find_library(screen REQUIRED)
 endif ()
 
